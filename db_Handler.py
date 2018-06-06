@@ -96,7 +96,7 @@ class DBHandler:
 
         return friendList
 
-    def createChatRoom(self, memberList, groupName = None) :
+    def createChatRoom(self, memberList, Type = "F", groupName = None) :
         global cursor, conn
         result = False
         memberList.sort()
@@ -111,7 +111,7 @@ class DBHandler:
         
         try :
             for i in range(0,len(memberList)) :
-                cursor.execute("INSERT INTO RoomMap(code,GroupName,member) VALUES(%s,%s,%s)", (code,groupName,memberList[i]))
+                cursor.execute("INSERT INTO RoomMap(code,GroupName,member,type) VALUES(%s,%s,%s,%s)", (code,groupName,memberList[i],Type))
                 conn.commit()
             result = True
         except :
@@ -131,13 +131,13 @@ class DBHandler:
             else :
                 string = "%s%s" % (friend, user)
             code = self.MD5(string)
-            initInfo.append(ChatRoom.ChatRoom(code,friend))
+            initInfo.append(ChatRoom.ChatRoom(code,friend,"F"))
 
         sql = "SELECT code, GroupName FROM RoomMap WHERE GroupName IS NOT NULL AND member = '%s'" % (user)
         cursor.execute(sql)
         for i in range(0,cursor.rowcount) :
             row = cursor.fetchone()
-            initInfo.append(ChatRoom.ChatRoom(row[0], row[1]))
+            initInfo.append(ChatRoom.ChatRoom(row[0], row[1], "G"))
 
         return initInfo
 

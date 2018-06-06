@@ -8,6 +8,8 @@ import identifier as idf
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+client = None
+
 mqtt_loop = False
 
 db = db_Handler.DBHandler()
@@ -18,10 +20,11 @@ db.connect()
 def on_message(client, userdata, message):
     topic = message.topic
     msg = str(message.payload.decode("utf-8"))
-    hall(topic,msg)
+    thread = threading.Thread(target = hall, args = (topic, msg))
+    thread.start()
 
 def on_log(client, userdata, level, buf):
-    print("log : " + buf)
+    print"log : %s" % (buf)
 
 ###################################
 
@@ -30,13 +33,14 @@ def mqtt_client_thread():
     signal.signal(signal.SIGQUIT, stop)
     signal.signal(signal.SIGINT,  stop)  # Ctrl-C
 
+    heartBeat = 0
 
-    global mqtt_loop
+    global mqtt_loop, client
     client_id = "gardenia"
     client = mqtt.Client(client_id,False)
 
     client.on_message = on_message
-    #client.on_log = on_log
+    client.on_log = on_log
 
     host_name = "140.116.82.52"
     client.connect(host_name,1883)
@@ -51,6 +55,8 @@ def mqtt_client_thread():
         client.loop()
         cnt += 1
         if cnt > 20:
+            heartBeat += 1
+            print "HeartBeat = %d" % (heartBeat)
             try:
                 client.reconnect()
             except:
@@ -62,9 +68,27 @@ def mqtt_client_thread():
 ###################################
 
 def hall(topic, msg) :
-    print("\ninto hall\n")
+    print("\n-------  into hall  -------\n")
     identifier = topic.split("/")[0]
     user = topic.split("/")[1]
+
+    if   identifier == idf.FriendData :
+        friendData(topic, user)
+    elif identifier == idf.Initialize :
+        initialize(topic, user)
+
+def friendData(topic, user) :
+    global db, client
+    L = db.getFriendList(user)
+
+def initialize(topic, user) :
+    global db, client
+    L = db.getInitInfo(user)
+    print "user = %s\n" % (user)
+    for R in L :
+        print "code = %s\nname = %s\ntype = %s\n" %(R.code, R.roomName, R.type)
+        msg = "%s\t%s\t%s" % (R.code, R.roomName, R.type)
+        print "%s\n" % (msg)
 ###################################
 
 def stop(*args):
@@ -75,8 +99,7 @@ def stop(*args):
 
 if __name__ == "__main__":
 
-    #mqtt_client_thread()
-    print idf.FriendData
+    mqtt_client_thread()
 
     print("exit program")
     sys.exit(0)

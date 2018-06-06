@@ -1,2 +1,3 @@
 
 FriendData = "FriendData"
+Initialize = "Initialize"

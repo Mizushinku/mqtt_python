@@ -6,6 +6,6 @@ class C :
 
 
 
-s = "abc/FXX/123/G11"
+s = "abc\tFXX\t123\nG11"
 
-print s.rsplit("/")
+print s.rsplit("\t")
