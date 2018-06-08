@@ -46,7 +46,7 @@ def mqtt_client_thread():
     host_name = "140.116.82.52"
     client.connect(host_name,1883)
 
-    topic = "#"
+    topic = "IDF/+/+"
 
     client.subscribe(topic)
 
@@ -70,8 +70,8 @@ def mqtt_client_thread():
 
 def hall(topic, msg) :
     print("\n-------  into hall  -------\n")
-    identifier = topic.split("/")[0]
-    user = topic.split("/")[1]
+    identifier = topic.split("/")[1]
+    user = topic.split("/")[2]
 
     if   identifier == idf.FriendData :
         friendData(topic, user)
@@ -84,13 +84,12 @@ def friendData(topic, user) :
 
 def initialize(topic, user) :
     global db, client
-    user = "P76054606"
     L = db.getInitInfo(user)
-    print ("user = %s\n" % (user))
+    topic_re = "%s/Re" % (topic)
     for R in L :
-        print ("code = %s\nname = %s\ntype = %s\n" %(R.code, R.roomName, R.type))
         msg = ("%s\t%s\t%s" % (R.code, R.roomName, R.type))
         print ("%s\n" % (msg))
+        client.publish(topic_re,msg)
 ###################################
 
 def stop(*args):
