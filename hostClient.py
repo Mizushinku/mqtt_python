@@ -4,9 +4,10 @@ import paho.mqtt.client as mqtt
 import time, signal, sys, threading
 import db_Handler, ChatRoom, Record
 import identifier as idf
+import importlib
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+#importlib.reload(sys)
+#sys.setdefaultencoding('utf-8')
 
 client = None
 
@@ -24,13 +25,13 @@ def on_message(client, userdata, message):
     thread.start()
 
 def on_log(client, userdata, level, buf):
-    print"log : %s" % (buf)
+    print ("log : %s" % (buf))
 
 ###################################
 
 def mqtt_client_thread():
     signal.signal(signal.SIGTERM, stop)
-    signal.signal(signal.SIGQUIT, stop)
+    #signal.signal(signal.SIGQUIT, stop)
     signal.signal(signal.SIGINT,  stop)  # Ctrl-C
 
     heartBeat = 0
@@ -56,7 +57,7 @@ def mqtt_client_thread():
         cnt += 1
         if cnt > 20:
             heartBeat += 1
-            print "HeartBeat = %d" % (heartBeat)
+            print ("HeartBeat = %d" % (heartBeat))
             try:
                 client.reconnect()
             except:
@@ -84,11 +85,11 @@ def friendData(topic, user) :
 def initialize(topic, user) :
     global db, client
     L = db.getInitInfo(user)
-    print "user = %s\n" % (user)
+    print ("user = %s\n" % (user))
     for R in L :
-        print "code = %s\nname = %s\ntype = %s\n" %(R.code, R.roomName, R.type)
-        msg = "%s\t%s\t%s" % (R.code, R.roomName, R.type)
-        print "%s\n" % (msg)
+        print ("code = %s\nname = %s\ntype = %s\n" %(R.code, R.roomName, R.type))
+        msg = ("%s\t%s\t%s" % (R.code, R.roomName, R.type))
+        print ("%s\n" % (msg))
 ###################################
 
 def stop(*args):

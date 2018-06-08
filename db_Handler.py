@@ -2,9 +2,10 @@
 import MySQLdb
 import sys, time, hashlib
 import ChatRoom, Record
+import importlib
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+#importlib.reload(sys)
+#sys.setdefaultencoding('utf-8')
 
 class DBHandler:
 
