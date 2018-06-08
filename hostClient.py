@@ -84,6 +84,7 @@ def friendData(topic, user) :
 
 def initialize(topic, user) :
     global db, client
+    user = "P76054606"
     L = db.getInitInfo(user)
     print ("user = %s\n" % (user))
     for R in L :

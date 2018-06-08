@@ -127,7 +127,7 @@ class DBHandler:
         friendList = self.getFriendList(user)
         for i in range(0,len(friendList)) :
             friend = friendList[i]
-            if cmp(user, friend) < 0 :
+            if self.cmp(user, friend) < 0 :
                 string = "%s%s" % (user, friend)
             else :
                 string = "%s%s" % (friend, user)
@@ -194,7 +194,7 @@ class DBHandler:
 
     def MD5(self, string) :
         encoder = hashlib.md5()
-        encoder.update(string)
+        encoder.update(string.encode('utf-8'))
         code = encoder.hexdigest().upper()
         return code
 
@@ -207,5 +207,8 @@ class DBHandler:
             result = True
 
         return result
+
+    def cmp(self, a, b) :
+        return (a > b) - (a < b)
 
 ############################################################
