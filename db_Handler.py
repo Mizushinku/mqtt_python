@@ -191,6 +191,18 @@ class DBHandler:
         
         return record
 
+    def getLast(self, user, Type) :
+        global cursor
+        if Type == "F" :
+            sql = "SELECT code FROM RoomMap WHERE member = '%s' AND Type = '%s' ORDER BY time DESC LIMIT 1" % (user,Type)
+            cursor.execute(sql)
+            row = cursor.fetchone()
+            return row[0]
+        elif Type == "G" :
+            sql = "SELECT code, GroupName FROM RoomMap WHERE member = '%s' AND Type = '%s' ORDER BY time DESC LIMIT 1" % (user,Type)
+            cursor.execute(sql)
+            row = cursor.fetchone()
+            return "%s/%s" % (row[0],row[1])
 
     def MD5(self, string) :
         encoder = hashlib.md5()

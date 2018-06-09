@@ -77,6 +77,8 @@ def hall(topic, msg) :
         friendData(topic, user)
     elif identifier == idf.Initialize :
         initialize(topic, user)
+    elif identifier == idf.AddFriend :
+        addFriend(topic, user, msg)
 
 def friendData(topic, user) :
     global db, client
@@ -88,8 +90,18 @@ def initialize(topic, user) :
     topic_re = "%s/Re" % (topic)
     for R in L :
         msg = ("%s\t%s\t%s" % (R.code, R.roomName, R.type))
-        print ("%s\n" % (msg))
         client.publish(topic_re,msg)
+
+def addFriend(topic, user, friend) :
+    global db, client
+    result = db.addFriend(user,friend)
+    topic_re = "%s/Re" % (topic)
+    if result == True :
+        last = db.getLast(user,"F")
+        msg = "true/%s" % (last)
+        client.publish(topic_re,msg)
+    else :
+        client.publish(topic_re,"false")
 ###################################
 
 def stop(*args):
