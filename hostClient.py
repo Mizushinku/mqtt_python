@@ -91,10 +91,10 @@ def initialize(topic, user) :
     L = db.getInitInfo(user)
     topic_re = "%s/Re" % (topic)
     for R in L :
-        msg = ("%s\t%s\t%s" % (R.code, R.roomName, R.type))
+        msg = ("%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type))
         client.publish(topic_re,msg)
         if R.type == "F" :
-            img = db.getImage(R.roomName)
+            img = db.getImage(R.ID)
             client.publish(topic_re,img)
 
 def addFriend(topic, user, friend) :
@@ -103,7 +103,8 @@ def addFriend(topic, user, friend) :
     topic_re = "%s/Re" % (topic)
     if result == True :
         last = db.getLast(user,"F")
-        msg = "true/%s/%s" % (friend,last)
+        name = db.getName(friend)
+        msg = "true/%s/%s/%s" % (name,friend,last)
         client.publish(topic_re,msg)
         img = db.getImage(friend)
         client.publish(topic_re,img)

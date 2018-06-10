@@ -151,13 +151,14 @@ class DBHandler:
             else :
                 string = "%s%s" % (friend, user)
             code = self.MD5(string)
-            initInfo.append(ChatRoom.ChatRoom(code,friend,"F"))
+            name = self.getName(friend)
+            initInfo.append(ChatRoom.ChatRoom(code, name, friend, "F"))
 
         sql = "SELECT code, GroupName FROM RoomMap WHERE GroupName IS NOT NULL AND member = '%s'" % (user)
         cursor.execute(sql)
         for i in range(0,cursor.rowcount) :
             row = cursor.fetchone()
-            initInfo.append(ChatRoom.ChatRoom(row[0], row[1], "G"))
+            initInfo.append(ChatRoom.ChatRoom(row[0], row[1], "", "G"))
 
         return initInfo
 
@@ -229,12 +230,18 @@ class DBHandler:
             return "%s/%s" % (row[0],row[1])
 
     def getImage(self, user) :
-        self.re_connect()
         global cursor
         sql = "SELECT Photo FROM students WHERE StudentID = '%s'" % (user)
         cursor.execute(sql)
         row = cursor.fetchone()
         return row[0]
+
+    def getName(self, user) :
+        global cursor
+        sql = "SELECT Name FROM students WHERE StudentID = '%s'" % (user)
+        cursor.execute(sql)
+        name = cursor.fetchone()
+        return name[0]
 
     def MD5(self, string) :
         encoder = hashlib.md5()
@@ -259,4 +266,5 @@ class DBHandler:
 ############################################################
 #d = DBHandler()
 #d.connect()
-
+#L = list(("F74056255","F74051043","F74054025","F64051114"))
+#d.createChatRoom(L,"G","G11_睏zZZ")
