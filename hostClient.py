@@ -74,15 +74,15 @@ def hall(topic, msg) :
     user = topic.split("/")[2]
 
     if   identifier == idf.FriendData :
-        friendData(topic, user)
+        friendData(topic, user, msg)
     elif identifier == idf.Initialize :
         initialize(topic, user)
     elif identifier == idf.AddFriend :
         addFriend(topic, user, msg)
 
-def friendData(topic, user) :
+def friendData(topic, user, msg) :
     global db, client
-    img = db.getImage(user)
+    img = db.getImage(msg)
     topic_re = "%s/Re" % (topic)
     client.publish(topic_re,img)
 
@@ -93,6 +93,9 @@ def initialize(topic, user) :
     for R in L :
         msg = ("%s\t%s\t%s" % (R.code, R.roomName, R.type))
         client.publish(topic_re,msg)
+        if R.type == "F" :
+            img = db.getImage(R.roomName)
+            client.publish(topic_re,img)
 
 def addFriend(topic, user, friend) :
     global db, client
@@ -102,6 +105,8 @@ def addFriend(topic, user, friend) :
         last = db.getLast(user,"F")
         msg = "true/%s/%s" % (friend,last)
         client.publish(topic_re,msg)
+        img = db.getImage(friend)
+        client.publish(topic_re,img)
     else :
         client.publish(topic_re,"false")
 ###################################
