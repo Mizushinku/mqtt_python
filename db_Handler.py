@@ -228,6 +228,14 @@ class DBHandler:
             row = cursor.fetchone()
             return "%s/%s" % (row[0],row[1])
 
+    def getImage(self, user) :
+        self.re_connect()
+        global cursor
+        sql = "SELECT Photo FROM students WHERE StudentID = '%s'" % (user)
+        cursor.execute(sql)
+        row = cursor.fetchone()
+        return row[0]
+
     def MD5(self, string) :
         encoder = hashlib.md5()
         encoder.update(string.encode('utf-8'))
@@ -249,3 +257,5 @@ class DBHandler:
         return (a > b) - (a < b)
 
 ############################################################
+#d = DBHandler()
+#d.connect()

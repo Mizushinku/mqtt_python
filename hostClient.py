@@ -82,7 +82,9 @@ def hall(topic, msg) :
 
 def friendData(topic, user) :
     global db, client
-    L = db.getFriendList(user)
+    img = db.getImage(user)
+    topic_re = "%s/Re" % (topic)
+    client.publish(topic_re,img)
 
 def initialize(topic, user) :
     global db, client
@@ -98,13 +100,13 @@ def addFriend(topic, user, friend) :
     topic_re = "%s/Re" % (topic)
     if result == True :
         last = db.getLast(user,"F")
-        msg = "true/%s" % (last)
+        msg = "true/%s/%s" % (friend,last)
         client.publish(topic_re,msg)
     else :
         client.publish(topic_re,"false")
 ###################################
 
-def stop(*args):
+def stop(*args) :
     global mqtt_loop
     mqtt_loop = False
 
