@@ -3,6 +3,7 @@ import MySQLdb
 import sys, time, hashlib
 import ChatRoom, Record
 import importlib
+from MySQLdb import OperationalError
 
 #importlib.reload(sys)
 #sys.setdefaultencoding('utf-8')
@@ -31,7 +32,19 @@ class DBHandler:
                                 charset = self.charset)
         cursor = conn.cursor()
 
+    def re_connect(self) :
+        global cursor
+        try :
+            sql = "SELECT null FROM foo"
+            cursor.execute(sql)
+        except OperationalError as e :
+            if 'MySQL server has gone away' in str(e) :
+                self.connect()
+            else :
+                raise e
+
     def confirmAccount(self, account) :
+        self.re_connect()
         global cursor
         result = False
         
@@ -43,6 +56,7 @@ class DBHandler:
         return result
 
     def login(self, account) :
+        self.re_connect()
         global cursor
         result = False
 
@@ -54,6 +68,7 @@ class DBHandler:
         return result
     
     def isFriend(self, user, friend) :
+        self.re_connect()
         global cursor
         result = False
         if(self.confirmAccount(user) and self.confirmAccount(friend)) :
@@ -65,6 +80,7 @@ class DBHandler:
         return result
 
     def addFriend(self, user, friend) :
+        self.re_connect()
         global cursor, conn
         result = False
         if(self.confirmAccount(user) and self.confirmAccount(friend) and not(self.isFriend(user,friend)) and user != friend) :
@@ -84,6 +100,7 @@ class DBHandler:
         return result
 
     def getFriendList(self, user) :
+        self.re_connect()
         global cursor, conn
         friendList = list(())
         try :
@@ -98,6 +115,7 @@ class DBHandler:
         return friendList
 
     def createChatRoom(self, memberList, Type = "F", groupName = None) :
+        self.re_connect()
         global cursor, conn
         result = False
         memberList.sort()
@@ -121,6 +139,7 @@ class DBHandler:
         return result
 
     def getInitInfo(self, user) :
+        self.re_connect()
         global cursor
         initInfo = list(())
         
@@ -143,6 +162,7 @@ class DBHandler:
         return initInfo
 
     def getReceiverList(self, code) :
+        self.re_connect()
         global cursor
         receiverList = list(())
 
@@ -155,6 +175,7 @@ class DBHandler:
         return receiverList
     
     def storeRecord(self, code, sender, MSG) :
+        self.re_connect()
         global cursor, conn
         try :
             sql = "INSERT INTO Record(code,sender,MSG) VALUES('%s','%s','%s')" % (code, sender, MSG)
@@ -164,6 +185,7 @@ class DBHandler:
             conn.rollback()
 
     def arrangeRecord(self, code) :
+        self.re_connect()
         global cursor, conn
         try :
             sql = "SELECT null FROM Record WHERE code = '%s'" % (code)
@@ -179,6 +201,7 @@ class DBHandler:
     
     
     def getRecord(self, code) :
+        self.re_connect()
         global cursor
         self.arrangeRecord(code)
         record = list(())
@@ -192,6 +215,7 @@ class DBHandler:
         return record
 
     def getLast(self, user, Type) :
+        self.re_connect()
         global cursor
         if Type == "F" :
             sql = "SELECT code FROM RoomMap WHERE member = '%s' AND Type = '%s' ORDER BY time DESC LIMIT 1" % (user,Type)
@@ -211,6 +235,7 @@ class DBHandler:
         return code
 
     def codeExist(self, code) :
+        self.re_connect()
         global cursor
         result = False
         sql = "SELECT DISTINCT null FROM RoomMap WHERE code = '%s'" % (code)
