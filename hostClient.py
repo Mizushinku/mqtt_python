@@ -79,6 +79,8 @@ def hall(topic, msg) :
         initialize(topic, user)
     elif identifier == idf.AddFriend :
         addFriend(topic, user, msg)
+    elif identifier == idf.AddGroup :
+        addGroup(topic, user, msg)
 
 def friendData(topic, user, msg) :
     global db, client
@@ -108,6 +110,20 @@ def addFriend(topic, user, friend) :
         client.publish(topic_re,msg)
         img = db.getImage(friend)
         client.publish(topic_re,img)
+    else :
+        client.publish(topic_re,"false")
+
+def addGroup(topic, user, member_str) :
+    global db, client
+    L = member_str.split("\t")
+    groupName = L[0]
+    L.remove(L[0])
+    result = db.createChatRoom(L,"G",groupName)
+    topic_re = "%s/Re" % (topic)
+    if result == True :
+        last = db.getLast(user,"G")
+        msg = "true/%s" % (last)
+        client.publish(topic_re,msg)
     else :
         client.publish(topic_re,"false")
 ###################################

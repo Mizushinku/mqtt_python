@@ -6,6 +6,11 @@ class C :
 
 
 
-s = "abc\tFXX\t123\nG11"
+s = "abc\tFXX\t123\tG11"
 
-print s.rsplit("\t")
+L = (s.rsplit("\t"))
+print(L)
+L.sort()
+print(L)
+L.remove(L[0])
+print(L)
