@@ -137,6 +137,20 @@ class DBHandler:
 
         return friendList
 
+    def withdrawFromGroup(self, user, code) :
+        self.re_connect()
+        global cursor, conn
+        result = False
+        try :
+            sql = "DELETE FROM roomMap WHERE code = '%s' AND member = '%s'" % (code, user)
+            cursor.execute(sql)
+            conn.commit()
+            result = True
+        except :
+            conn.rollback()
+
+        return result
+
     def createChatRoom(self, memberList, Type = "F", groupName = None) :
         self.re_connect()
         global cursor, conn

@@ -83,6 +83,8 @@ def hall(topic, msg) :
         addGroup(topic, user, msg)
     elif identifier == idf.DeleteFriend :
         deleteFriend(topic, user, msg)
+    elif identifier == idf.WithdrawFromGroup :
+        withdrawFromGroup(topic, user, msg)
 
 def friendData(topic, user, msg) :
     global db, client
@@ -138,6 +140,15 @@ def addGroup(topic, user, member_str) :
         last = db.getLast(user,"G")
         msg = "true/%s" % (last)
         client.publish(topic_re,msg)
+    else :
+        client.publish(topic_re,"false")
+
+def withdrawFromGroup(topic, user, code) :
+    global db, client
+    result = db.withdrawFromGroup(user, code)
+    topic_re = "%s/Re" % (topic)
+    if result == True :
+        client.publish(topic_re,"true")
     else :
         client.publish(topic_re,"false")
 ###################################
