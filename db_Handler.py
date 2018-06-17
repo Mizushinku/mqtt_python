@@ -99,6 +99,29 @@ class DBHandler:
 
         return result
 
+    def deleteFriend(self, user, friend, code) :
+        self.re_connect()
+        global cursor, conn
+        result = False
+        try :
+            sql = "DELETE FROM friendMap WHERE user = '%s' AND friend = '%s'" % (user, friend)
+            cursor.execute(sql)
+            conn.commit()
+            sql = "DELETE FROM friendMap WHERE user = '%s' AND friend = '%s'" % (friend, user)
+            cursor.execute(sql)
+            conn.commit()
+            sql = "DELETE FROM record WHERE code = '%s'" % (code)
+            cursor.execute(sql)
+            conn.commit()
+            sql = "DELETE FROM roomMap WHERE code = '%s'" % (code)
+            cursor.execute(sql)
+            conn.commit()
+            result = True
+        except :
+            conn.rollback()
+
+        return result
+
     def getFriendList(self, user) :
         self.re_connect()
         global cursor, conn

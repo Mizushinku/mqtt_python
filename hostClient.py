@@ -81,6 +81,8 @@ def hall(topic, msg) :
         addFriend(topic, user, msg)
     elif identifier == idf.AddGroup :
         addGroup(topic, user, msg)
+    elif identifier == idf.DeleteFriend :
+        deleteFriend(topic, user, msg)
 
 def friendData(topic, user, msg) :
     global db, client
@@ -110,6 +112,18 @@ def addFriend(topic, user, friend) :
         client.publish(topic_re,msg)
         img = db.getImage(friend)
         client.publish(topic_re,img)
+    else :
+        client.publish(topic_re,"false")
+
+def deleteFriend(topic, user, msg) :
+    global db, client
+    friendID = msg.split("/")[0]
+    code = msg.split("/")[1]
+    result = db.deleteFriend(user, friendID, code)
+
+    topic_re = "%s/Re" % (topic)
+    if result == True :
+        client.publish(topic_re,"true")
     else :
         client.publish(topic_re,"false")
 
