@@ -85,6 +85,8 @@ def hall(topic, msg) :
         deleteFriend(topic, user, msg)
     elif identifier == idf.WithdrawFromGroup :
         withdrawFromGroup(topic, user, msg)
+    elif identifier == idf.SendMessage :
+        sendMessage(topic, user, msg)    
 
 def friendData(topic, user, msg) :
     global db, client
@@ -151,6 +153,20 @@ def withdrawFromGroup(topic, user, code) :
         client.publish(topic_re,"true")
     else :
         client.publish(topic_re,"false")
+
+def sendMessage(topic, user, msg)
+    global db, client
+    topic_splitLine = topic.split("/")
+    msg_splitLine = msg.split("\t")
+    code = msg_splitLine[0]
+    sender = msg_splitLine[1]
+    text = msg_splitLine[2]
+    db.storeRecord(code,sender,text)
+    receiver = db.getReceiverList(code)
+    for R in receiver:
+        topic_re = "%s/Re" % (topic_splitLine[0] + "/" + topic_splitLine[1] + "/" + R) 
+        client.publish(topic_re,msg)
+
 ###################################
 
 def stop(*args) :
