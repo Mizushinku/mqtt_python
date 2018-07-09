@@ -176,7 +176,7 @@ def getRecord(topic, user, code) :
     for R in L :
         msg = "%s\t%s" % (R.sender, R.MSG)
         client.publish(topic_re,msg)
-        print(msg)
+        #print(msg)
         time.sleep(0.01)
 
 ###################################

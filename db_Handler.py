@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-import MySQLdb
+#import MySQLdb
+import pymysql
 import sys, time, hashlib
 import ChatRoom, Record
 import importlib
-from MySQLdb import OperationalError
+#from MySQLdb import OperationalError
+pymysql.install_as_MySQLdb()
 
 #importlib.reload(sys)
 #sys.setdefaultencoding('utf-8')
@@ -24,7 +26,7 @@ class DBHandler:
 
     def connect(self) :
         global conn, cursor
-        conn = MySQLdb.connect( host = self.host,
+        conn = pymysql.connect( host = self.host,
                                 port = self.port,
                                 user = self.user,
                                 passwd = self.password,
@@ -37,7 +39,7 @@ class DBHandler:
         try :
             sql = "SELECT null FROM foo"
             cursor.execute(sql)
-        except OperationalError as e :
+        except pymysql.err.OperationalError as e :
             if 'MySQL server has gone away' in str(e) :
                 self.connect()
             else :
