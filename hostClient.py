@@ -26,7 +26,7 @@ def on_message(client, userdata, message):
 
 def on_log(client, userdata, level, buf):
     print ("log : %s" % (buf))
-
+    
 ###################################
 
 def mqtt_client_thread():
@@ -173,11 +173,16 @@ def getRecord(topic, user, code) :
     global db, client
     L = db.getRecord(code)
     topic_re = "%s/Re" % (topic)
+    msg = ""
+    index = 1
     for R in L :
-        msg = "%s\t%s" % (R.sender, R.MSG)
-        client.publish(topic_re,msg)
-        #print(msg)
-        time.sleep(0.04)
+        if index == 1:
+            msg += "%s\t%s" % (R.sender, R.MSG)
+        else :
+            msg += ",%s\t%s" % (R.sender, R.MSG)
+        index = index + 1
+    client.publish(topic_re,msg)
+    #print(msg)
 
 ###################################
 
