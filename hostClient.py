@@ -66,6 +66,8 @@ def mqtt_client_thread():
             cnt = 0
     print("quit mqtt thread")
     client.disconnect()
+    '''
+    client.loop_forever()
 
 ###################################
 
