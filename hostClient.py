@@ -52,6 +52,7 @@ def mqtt_client_thread():
 
     mqtt_loop = True
     cnt = 0
+    '''
     while mqtt_loop:
         client.loop()
         cnt += 1
@@ -181,7 +182,7 @@ def getRecord(topic, user, code) :
         else :
             msg += ",%s\t%s" % (R.sender, R.MSG)
         index = index + 1
-    client.publish(topic_re,msg)
+    client.publish(topic_re,msg,2,False)
     #print(msg)
 
 ###################################
@@ -189,7 +190,7 @@ def getRecord(topic, user, code) :
 def stop(*args) :
     global mqtt_loop
     mqtt_loop = False
-
+    client.disconnect()
 ###################################
 
 if __name__ == "__main__":
