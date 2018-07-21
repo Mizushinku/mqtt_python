@@ -76,8 +76,8 @@ def hall(topic, msg) :
     identifier = topic.split("/")[1]
     user = topic.split("/")[2]
 
-    if   identifier == idf.FriendData :
-        friendData(topic, user, msg)
+    if   identifier == idf.FriendIcon :
+        friendIcon(topic, user, msg)
     elif identifier == idf.Initialize :
         initialize(topic, user)
     elif identifier == idf.AddFriend :
@@ -93,22 +93,26 @@ def hall(topic, msg) :
     elif identifier == idf.GetRecord :
         getRecord(topic, user, msg)
 
-def friendData(topic, user, msg) :
+def friendIcon(topic, user, msg) :
     global db, client
     img = db.getImage(msg)
     topic_re = "%s/Re" % (topic)
-    client.publish(topic_re,img)
+    topic_re = topic_re.replace("FriendIcon","FriendIcon:" + msg)
+    client.publish(topic_re,img,2,False)
 
 def initialize(topic, user) :
     global db, client
     L = db.getInitInfo(user)
     topic_re = "%s/Re" % (topic)
-    for R in L :
-        msg = ("%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type))
-        client.publish(topic_re,msg)
-        if R.type == "F" :
-            img = db.getImage(R.ID)
-            client.publish(topic_re,img)
+    msg = ""
+    for i in range(0,len(L)) :
+        R = L[i]
+        if i == 0 :
+            msg += ("%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type))
+        else :
+            msg += (",%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type))
+        i = i + 1
+    client.publish(topic_re,msg,2,False)
 
 def addFriend(topic, user, friend) :
     global db, client
@@ -177,13 +181,13 @@ def getRecord(topic, user, code) :
     L = db.getRecord(code)
     topic_re = "%s/Re" % (topic)
     msg = ""
-    index = 1
-    for R in L :
-        if index == 1:
+    for i in range(0,len(L)) :
+        R = L[i]
+        if i == 0:
             msg += "%s\t%s" % (R.sender, R.MSG)
         else :
             msg += ",%s\t%s" % (R.sender, R.MSG)
-        index = index + 1
+        i = i + 1
     client.publish(topic_re,msg,2,False)
     #print(msg)
 

@@ -1,5 +1,5 @@
 
-FriendData = "FriendData"
+FriendIcon = "FriendIcon"
 Initialize = "Initialize"
 AddFriend = "AddFriend"
 AddGroup = "AddGroup"
