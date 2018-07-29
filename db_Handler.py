@@ -223,6 +223,11 @@ class DBHandler:
             conn.commit()
         except :
             conn.rollback()
+        sql = "SELECT time FROM Record WHERE code = '%s' AND sender = '%s' AND MSG = '%s'" % (code, sender, MSG)
+        cursor.execute(sql)
+        row = cursor.fetchone()
+        return row[0]
+            
 
     def arrangeRecord(self, code) :
         self.re_connect()
@@ -245,12 +250,12 @@ class DBHandler:
         global cursor
         self.arrangeRecord(code)
         record = list(())
-        sql = "SELECT sender, MSG FROM Record WHERE code = '%s'" % (code)
+        sql = "SELECT sender, MSG, time FROM Record WHERE code = '%s'" % (code)
         cursor.execute(sql)
 
         for i in range(0,cursor.rowcount) :
             row = cursor.fetchone()
-            record.append(Record.Record(row[0], row[1]))
+            record.append(Record.Record(row[0], row[1], row[2]))
         
         return record
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import paho.mqtt.client as mqtt
-import time, signal, sys, threading
+import time, signal, sys, threading, datetime
 import db_Handler, ChatRoom, Record
 import identifier as idf
 import importlib
@@ -170,7 +170,8 @@ def sendMessage(topic, user, msg) :
     code = msg_splitLine[0]
     sender = msg_splitLine[1]
     text = msg_splitLine[2]
-    db.storeRecord(code,sender,text)
+    t = db.storeRecord(code,sender,text)
+    msg = msg + "\t" + datetime.datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
     receiver = db.getReceiverList(code)
     for R in receiver:
         topic_re = "%s/Re" % (topic_splitLine[0] + "/" + topic_splitLine[1] + "/" + R) 
@@ -184,9 +185,9 @@ def getRecord(topic, user, code) :
     for i in range(0,len(L)) :
         R = L[i]
         if i == 0:
-            msg += "%s\t%s" % (R.sender, R.MSG)
+            msg += "%s\t%s\t%s" % (R.sender, R.MSG, R.time)
         else :
-            msg += ",%s\t%s" % (R.sender, R.MSG)
+            msg += ",%s\t%s\t%s" % (R.sender, R.MSG, R.time)
         i = i + 1
     client.publish(topic_re,msg,2,False)
     #print(msg)
