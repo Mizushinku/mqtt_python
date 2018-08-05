@@ -171,7 +171,7 @@ def sendMessage(topic, user, msg) :
     sender = msg_splitLine[1]
     text = msg_splitLine[2]
     t = db.storeRecord(code,sender,text)
-    msg = msg + "\t" + datetime.datetime.strftime(t, '%Y-%m-%d %H:%M')
+    msg = msg + "\t" + datetime.datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
     receiver = db.getReceiverList(code)
     for R in receiver:
         topic_re = "%s/Re" % (topic_splitLine[0] + "/" + topic_splitLine[1] + "/" + R) 
