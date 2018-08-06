@@ -26,7 +26,7 @@ def on_message(client, userdata, message):
 
 def on_log(client, userdata, level, buf):
     print ("log : %s" % (buf))
-    
+
 ###################################
 
 def mqtt_client_thread():
@@ -95,9 +95,10 @@ def hall(topic, msg) :
 
 def friendIcon(topic, user, msg) :
     global db, client
-    img = db.getImage(msg)
+    ID = msg.split(":")[1]
+    img = db.getImage(ID)
     topic_re = "%s/Re" % (topic)
-    topic_re = topic_re.replace("FriendIcon","FriendIcon:" + msg)
+    topic_re = topic_re.replace("FriendIcon","FriendIcon," + msg)
     client.publish(topic_re,img,2,False)
 
 def initialize(topic, user) :
@@ -122,9 +123,9 @@ def addFriend(topic, user, friend) :
         last = db.getLast(user,"F")
         name = db.getName(friend)
         msg = "true/%s/%s/%s" % (name,friend,last)
-        client.publish(topic_re,msg)
-        img = db.getImage(friend)
-        client.publish(topic_re,img)
+        client.publish(topic_re,msg,2,False)
+        #img = db.getImage(friend)
+        #client.publish(topic_re,img)
     else :
         client.publish(topic_re,"false")
 
@@ -174,7 +175,7 @@ def sendMessage(topic, user, msg) :
     msg = msg + "\t" + datetime.datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
     receiver = db.getReceiverList(code)
     for R in receiver:
-        topic_re = "%s/Re" % (topic_splitLine[0] + "/" + topic_splitLine[1] + "/" + R) 
+        topic_re = "%s/Re" % (topic_splitLine[0] + "/" + topic_splitLine[1] + "/" + R)
         client.publish(topic_re,msg)
 
 def getRecord(topic, user, code) :

@@ -49,7 +49,7 @@ class DBHandler:
         self.re_connect()
         global cursor
         result = False
-        
+
         sql = "SELECT studentID FROM students WHERE studentID = '%s'" % (account)
         cursor.execute(sql)
         if cursor.rowcount == 1:
@@ -68,7 +68,7 @@ class DBHandler:
             result = True
 
         return result
-    
+
     def isFriend(self, user, friend) :
         self.re_connect()
         global cursor
@@ -166,7 +166,7 @@ class DBHandler:
         code = self.MD5(string)
         if self.codeExist(code) :
             return result
-        
+
         try :
             for i in range(0,len(memberList)) :
                 cursor.execute("INSERT INTO RoomMap(code,GroupName,member,type) VALUES(%s,%s,%s,%s)", (code,groupName,memberList[i],Type))
@@ -181,7 +181,7 @@ class DBHandler:
         self.re_connect()
         global cursor
         initInfo = list(())
-        
+
         friendList = self.getFriendList(user)
         for i in range(0,len(friendList)) :
             friend = friendList[i]
@@ -213,7 +213,7 @@ class DBHandler:
             receiverList.append(row[0])
 
         return receiverList
-    
+
     def storeRecord(self, code, sender, MSG) :
         self.re_connect()
         global cursor, conn
@@ -227,7 +227,7 @@ class DBHandler:
         cursor.execute(sql)
         row = cursor.fetchone()
         return row[0]
-            
+
 
     def arrangeRecord(self, code) :
         self.re_connect()
@@ -243,8 +243,8 @@ class DBHandler:
 
         except :
             conn.rollback()
-    
-    
+
+
     def getRecord(self, code) :
         self.re_connect()
         global cursor
@@ -256,7 +256,7 @@ class DBHandler:
         for i in range(0,cursor.rowcount) :
             row = cursor.fetchone()
             record.append(Record.Record(row[0], row[1], row[2]))
-        
+
         return record
 
     def getLast(self, user, Type) :
