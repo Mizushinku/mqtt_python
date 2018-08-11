@@ -92,6 +92,18 @@ def hall(topic, msg) :
         sendMessage(topic, user, msg)
     elif identifier == idf.GetRecord :
         getRecord(topic, user, msg)
+    elif identifier == idf.Login :
+        login(topic, user, msg)
+
+def login(topic, user, msg) :
+    global db, client
+    result = db.login(msg)
+    if result == True :
+        msg = "True," + msg
+    else :
+        msg = "False"
+    topic_re = "%s/Re" % (topic)
+    client.publish(topic_re,msg,2,False)
 
 def friendIcon(topic, user, msg) :
     global db, client
