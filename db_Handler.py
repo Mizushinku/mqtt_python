@@ -262,11 +262,25 @@ class DBHandler:
     def getLastMSG(self, code) :
         self.re_connect()
         global cursor
-        sql = "SELECT MSG, time FROM record WHERE code = '%s' ORDER BY time DESC LIMIT 1" % (code)
-            cursor.execute(sql)
+        sql = "SELECT MSG FROM record WHERE code = '%s' ORDER BY time DESC LIMIT 1" % (code)
+        cursor.execute(sql)
+        if cursor.rowcount > 0 :
             row = cursor.fetchone()
-            date = datetime.datetime.strftime(row[1],'%Y-%m-%d %H:%M:%S')
-            return "%s/%s" % (row[0],date)
+            return row[0]
+        else :
+            return ""
+    def getLastMSGTime(self, code) :
+        self.re_connect()
+        global cursor
+        sql = "SELECT time FROM record WHERE code = '%s' ORDER BY time DESC LIMIT 1" % (code)
+        cursor.execute(sql)
+        if cursor.rowcount > 0:
+            row = cursor.fetchone()
+            date = datetime.datetime.strftime(row[0],'%Y-%m-%d %H:%M:%S')
+            return date
+        else :
+            return ""
+
 
     def getLast(self, user, Type) :
         self.re_connect()

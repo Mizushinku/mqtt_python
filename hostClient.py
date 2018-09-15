@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import paho.mqtt.client as mqtt
-import time, signal, sys, threading, datetime
+import time, signal, sys, threading
 import db_Handler, ChatRoom, Record
 import identifier as idf
 import importlib
+import datetime
 
 #importlib.reload(sys)
 #sys.setdefaultencoding('utf-8')
@@ -120,12 +121,12 @@ def initialize(topic, user) :
     msg = ""
     for i in range(0,len(L)) :
         R = L[i]
+        Rmsg = db.getLastMSG(R.code)
+        Rmsg_Date = db.getLastMSGTime(R.code)
         if i == 0 :
-            Rmsg = db.getLastMSG(R.code).split("/")[0]
-            RmsgDate = db.getLastMSG(R.code).split("/")[1]
-            msg += ("%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type, Rmsg, Rmsg_date))
+            msg += ("%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type, Rmsg, Rmsg_Date))
         else :
-            msg += (",%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type, Rmsg, Rmsg_date))
+            msg += (",%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type, Rmsg, Rmsg_Date))
         i = i + 1
     client.publish(topic_re,msg,2,False)
 
