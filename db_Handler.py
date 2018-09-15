@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #import MySQLdb
 import pymysql
-import sys, time, hashlib
+import sys, time, hashlib, datetime
 import ChatRoom, Record
 import importlib
 #from MySQLdb import OperationalError
@@ -259,6 +259,15 @@ class DBHandler:
 
         return record
 
+    def getLastMSG(self, code) :
+        self.re_connect()
+        global cursor
+        sql = "SELECT MSG, time FROM record WHERE code = '%s' ORDER BY time DESC LIMIT 1" % (code)
+            cursor.execute(sql)
+            row = cursor.fetchone()
+            date = datetime.datetime.strftime(row[1],'%Y-%m-%d %H:%M:%S')
+            return "%s/%s" % (row[0],date)
+
     def getLast(self, user, Type) :
         self.re_connect()
         global cursor
@@ -274,6 +283,7 @@ class DBHandler:
             return "%s/%s" % (row[0],row[1])
 
     def getImage(self, user) :
+        self.re_connect()
         global cursor
         sql = "SELECT Photo FROM students WHERE StudentID = '%s'" % (user)
         cursor.execute(sql)

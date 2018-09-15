@@ -121,9 +121,11 @@ def initialize(topic, user) :
     for i in range(0,len(L)) :
         R = L[i]
         if i == 0 :
-            msg += ("%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type))
+            Rmsg = db.getLastMSG(R.code).split("/")[0]
+            RmsgDate = db.getLastMSG(R.code).split("/")[1]
+            msg += ("%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type, Rmsg, Rmsg_date))
         else :
-            msg += (",%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type))
+            msg += (",%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type, Rmsg, Rmsg_date))
         i = i + 1
     client.publish(topic_re,msg,2,False)
 
