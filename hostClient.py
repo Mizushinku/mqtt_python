@@ -95,6 +95,8 @@ def hall(topic, msg) :
         getRecord(topic, user, msg)
     elif identifier == idf.Login :
         login(topic, user, msg)
+    elif identifier == idf.AddFriendNotification :
+        addFriendNotification(topic, user)
 
 def login(topic, user, msg) :
     global db, client
@@ -207,6 +209,14 @@ def getRecord(topic, user, code) :
         i = i + 1
     client.publish(topic_re,msg,2,False)
     #print(msg)
+
+###################################
+
+def addFriendNotification(topic, user) :
+    global client
+    topic_re = "%s/Re" % (topic)
+    msg = ""
+    client.publish(topic_re,msg,2,False)
 
 ###################################
 
