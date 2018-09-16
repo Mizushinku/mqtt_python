@@ -268,7 +268,7 @@ class DBHandler:
             row = cursor.fetchone()
             return row[0]
         else :
-            return "Nope"
+            return 'No History'
     def getLastMSGTime(self, code) :
         self.re_connect()
         global cursor
@@ -279,7 +279,7 @@ class DBHandler:
             date = datetime.datetime.strftime(row[0],'%Y-%m-%d %H:%M:%S')
             return date
         else :
-            return "Nope"
+            return "XXXX-XX-XX XX:XX"
 
 
     def getLast(self, user, Type) :
