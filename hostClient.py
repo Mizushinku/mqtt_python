@@ -141,8 +141,11 @@ def addFriend(topic, user, friend) :
         name = db.getName(friend)
         msg = "true/%s/%s/%s" % (name,friend,last)
         client.publish(topic_re,msg,2,False)
-        #img = db.getImage(friend)
-        #client.publish(topic_re,img)
+        
+        topic_re = topic_re.replace(user,friend)
+        name = db.getName(user)
+        msg = "true/%s/%s/%s" % (name,user,last)
+        client.publish(topic_re,msg,2,False)
     else :
         client.publish(topic_re,"false")
 
