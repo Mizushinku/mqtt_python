@@ -157,7 +157,11 @@ def deleteFriend(topic, user, msg) :
 
     topic_re = "%s/Re" % (topic)
     if result == True :
-        client.publish(topic_re,"true")
+        client.publish(topic_re,"true/1")
+
+        topic_re = topic_re.replace(user,friendID)
+        MSG = "true/2/%s" % (user)
+        client.publish(topic_re,MSG)
     else :
         client.publish(topic_re,"false")
 
