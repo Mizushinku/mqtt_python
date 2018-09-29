@@ -139,12 +139,12 @@ def addFriend(topic, user, friend) :
     if result == True :
         last = db.getLast(user,"F")
         name = db.getName(friend)
-        msg = "true/%s/%s/%s" % (name,friend,last)
+        msg = "true/%s/%s/%s/1" % (name,friend,last)
         client.publish(topic_re,msg,2,False)
         
         topic_re = topic_re.replace(user,friend)
         name = db.getName(user)
-        msg = "true/%s/%s/%s" % (name,user,last)
+        msg = "true/%s/%s/%s/2" % (name,user,last)
         client.publish(topic_re,msg,2,False)
     else :
         client.publish(topic_re,"false")
