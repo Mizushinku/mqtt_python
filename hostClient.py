@@ -174,8 +174,15 @@ def addGroup(topic, user, member_str) :
     topic_re = "%s/Re" % (topic)
     if result == True :
         last = db.getLast(user,"G")
-        msg = "true/%s" % (last)
-        client.publish(topic_re,msg)
+        s = user
+        for ID in L :
+            topic_re = topic_re.replace(s,ID)
+            s = ID
+            if ID == user :
+                msg = "true/%s/1" % (last)
+            else :
+                msg = "true/%s/2" % (last)
+            client.publish(topic_re,msg)
     else :
         client.publish(topic_re,"false")
 
