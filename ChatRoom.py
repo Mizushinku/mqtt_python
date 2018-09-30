@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 class ChatRoom :
-    
-    def __init__(self, code, roomName, ID, Type) :
+
+    def __init__(self, code, roomName, member, Type) :
         self.code = code
         self.roomName = roomName
-        self.ID = ID
+        self.member = member
         self.type = Type
