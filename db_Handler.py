@@ -181,6 +181,7 @@ class DBHandler:
         self.re_connect()
         global cursor
         initInfo = list(())
+
         friendList = self.getFriendList(user)
         for i in range(0,len(friendList)) :
             friend = friendList[i]
@@ -190,8 +191,7 @@ class DBHandler:
                 string = "%s%s" % (friend, user)
             code = self.MD5(string)
             name = self.getName(friend)
-            member = self.getRoomMember(code)   #duplicate
-            initInfo.append(ChatRoom.ChatRoom(code, name, member, "F"))
+            initInfo.append(ChatRoom.ChatRoom(code, name, friend, "F"))
 
         sql = "SELECT code, GroupName FROM RoomMap WHERE GroupName IS NOT NULL AND member = '%s'" % (user)
         cursor.execute(sql)
@@ -199,10 +199,6 @@ class DBHandler:
             row = cursor.fetchone()
             initInfo.append(ChatRoom.ChatRoom(row[0], row[1], "", "G"))
 
-        for i in range(0,len(initInfo)) :
-            room = initInfo[i]
-            room.member = self.getRoomMember(room.code)
-            #print(room.member)
         return initInfo
 
     def getReceiverList(self, code) :
@@ -278,7 +274,7 @@ class DBHandler:
         global cursor
         sql = "SELECT time FROM record WHERE code = '%s' ORDER BY time DESC LIMIT 1" % (code)
         cursor.execute(sql)
-        if cursor.rowcount > 0 :
+        if cursor.rowcount > 0:
             row = cursor.fetchone()
             date = datetime.datetime.strftime(row[0],'%Y-%m-%d %H:%M:%S')
             return date
@@ -314,21 +310,6 @@ class DBHandler:
         cursor.execute(sql)
         name = cursor.fetchone()
         return name[0]
-
-    def getRoomMember(self, code) :
-        self.re_connect()
-        global cursor
-        member = ""
-        sql = "SELECT member FROM roommap WHERE code = '%s'" % (code)
-        cursor.execute(sql)
-        for i in range(0,cursor.rowcount) :
-            row = cursor.fetchone()
-            if i == 0 :
-                member += "%s" % (row[0])
-            else :
-                member += "-%s" % (row[0])
-        #print(member)
-        return member
 
     def MD5(self, string) :
         encoder = hashlib.md5()
