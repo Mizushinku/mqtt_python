@@ -48,7 +48,8 @@ def mqtt_client_thread():
     client.connect(host_name,1883)
 
     topic = "IDF/+/+"
-
+    client.subscribe(topic)
+    topic = "Service/+/+"
     client.subscribe(topic)
 
     mqtt_loop = True
@@ -73,30 +74,33 @@ def mqtt_client_thread():
 ###################################
 
 def hall(topic, msg) :
-    print("\n-------  into hall  -------\n")
+    print("-------  into hall  -------\n")
+    category = topic.split("/")[0]
     identifier = topic.split("/")[1]
     user = topic.split("/")[2]
 
-    if   identifier == idf.FriendIcon :
-        friendIcon(topic, user, msg)
-    elif identifier == idf.Initialize :
-        initialize(topic, user)
-    elif identifier == idf.AddFriend :
-        addFriend(topic, user, msg)
-    elif identifier == idf.AddGroup :
-        addGroup(topic, user, msg)
-    elif identifier == idf.DeleteFriend :
-        deleteFriend(topic, user, msg)
-    elif identifier == idf.WithdrawFromGroup :
-        withdrawFromGroup(topic, user, msg)
-    elif identifier == idf.SendMessage :
-        sendMessage(topic, user, msg)
-    elif identifier == idf.GetRecord :
-        getRecord(topic, user, msg)
-    elif identifier == idf.Login :
-        login(topic, user, msg)
-    elif identifier == idf.AddFriendNotification :
-        addFriendNotification(topic, user)
+    if   category == "IDF" :
+        if   identifier == idf.FriendIcon :
+            friendIcon(topic, user, msg)
+        elif identifier == idf.Initialize :
+            initialize(topic, user)
+        elif identifier == idf.AddFriend :
+            addFriend(topic, user, msg)
+        elif identifier == idf.AddGroup :
+            addGroup(topic, user, msg)
+        elif identifier == idf.DeleteFriend :
+            deleteFriend(topic, user, msg)
+        elif identifier == idf.WithdrawFromGroup :
+            withdrawFromGroup(topic, user, msg)
+        elif identifier == idf.SendMessage :
+            sendMessage(topic, user, msg)
+        elif identifier == idf.GetRecord :
+            getRecord(topic, user, msg)
+        elif identifier == idf.Login :
+            login(topic, user, msg)
+    elif category == "Service" :
+        if   identifier == idf.AddFriendNotification :
+            addFriendNotification(topic, user, msg)
 
 def login(topic, user, msg) :
     global db, client
@@ -226,10 +230,10 @@ def getRecord(topic, user, code) :
 
 ###################################
 
-def addFriendNotification(topic, user) :
+def addFriendNotification(topic, user, friendName) :
     global client
     topic_re = "%s/Re" % (topic)
-    msg = ""
+    msg = friendName
     client.publish(topic_re,msg,2,False)
 
 ###################################
