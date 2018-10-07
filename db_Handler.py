@@ -191,15 +191,32 @@ class DBHandler:
                 string = "%s%s" % (friend, user)
             code = self.MD5(string)
             name = self.getName(friend)
-            initInfo.append(ChatRoom.ChatRoom(code, name, friend, "F"))
-
+            #initInfo.append(ChatRoom.ChatRoom(code, name, friend, "F"))
+            memberID = self.getRoomMember(code)
+            initInfo.append(ChatRoom.ChatRoom(code, name, memberID, "F"))
         sql = "SELECT code, GroupName FROM RoomMap WHERE GroupName IS NOT NULL AND member = '%s'" % (user)
         cursor.execute(sql)
         for i in range(0,cursor.rowcount) :
             row = cursor.fetchone()
             initInfo.append(ChatRoom.ChatRoom(row[0], row[1], "", "G"))
-
+        for i in range(0,len(initInfo)) :
+            room = initInfo[i]
+            room.memberID = self.getRoomMember(room.code)
         return initInfo
+
+    def getRoomMember(self, code):
+        self.re_connect()
+        global cursor
+        member = ""
+        sql = "SELECT member FROM roommap WHERE code = '%s'" % (code)
+        cursor.execute(sql)
+        for i in range(0,cursor.rowcount) :
+            row = cursor.fetchone()
+            if i == 0:
+                member += "%s" % (row[0])
+            else :
+                member += "-%s" % (row[0])
+        return member
 
     def getReceiverList(self, code) :
         self.re_connect()

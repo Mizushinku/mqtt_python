@@ -130,9 +130,10 @@ def initialize(topic, user) :
         Rmsg = db.getLastMSG(R.code)
         Rmsg_Date = db.getLastMSGTime(R.code)
         if i == 0 :
-            msg += ("%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type, Rmsg, Rmsg_Date))
+            msg += ("%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.memberID, R.type, Rmsg, Rmsg_Date))
         else :
-            msg += (",%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.ID, R.type, Rmsg, Rmsg_Date))
+            msg += (",%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.memberID, R.type, Rmsg, Rmsg_Date))
+        #print(R.memberID)
         i = i + 1
     client.publish(topic_re,msg,2,False)
 
@@ -141,11 +142,11 @@ def addFriend(topic, user, friend) :
     result = db.addFriend(user,friend)
     topic_re = "%s/Re" % (topic)
     if result == True :
-        last = db.getLast(user,"F")
+        last = db.getLast(user,"F") #code
         name = db.getName(friend)
         msg = "true/%s/%s/%s/1" % (name,friend,last)
         client.publish(topic_re,msg,2,False)
-        
+
         topic_re = topic_re.replace(user,friend)
         name = db.getName(user)
         msg = "true/%s/%s/%s/2" % (name,user,last)
@@ -177,15 +178,17 @@ def addGroup(topic, user, member_str) :
     result = db.createChatRoom(L,"G",groupName)
     topic_re = "%s/Re" % (topic)
     if result == True :
-        last = db.getLast(user,"G")
+        last = db.getLast(user,"G") #code/GroupName
+        code = last.split("/")[0]
+        memberID = db.getRoomMember(code)
         s = user
         for ID in L :
             topic_re = topic_re.replace(s,ID)
             s = ID
             if ID == user :
-                msg = "true/%s/1" % (last)
+                msg = "true/%s/%s/1" % (last,memberID)
             else :
-                msg = "true/%s/2" % (last)
+                msg = "true/%s/%s/2" % (last,memberID)
             client.publish(topic_re,msg)
     else :
         client.publish(topic_re,"false")
