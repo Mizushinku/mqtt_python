@@ -238,9 +238,13 @@ def notifyMemberChange(code) :
     mList = memberID.split("-")
     for i in range(0,len(mList)) :
         member = mList[i]
-        msg = code + "/t" + memberID
-        topic = "IDF/MemberChange/%s" % (member)
-        client.publish(topic,msg,2,False)
+        if member == "" :
+            break
+        else :
+            msg = code + "\t" + memberID
+            topic = "IDF/MemberChange/%s/Re" % (member)
+            #print(msg)
+            client.publish(topic,msg,2,False)
 
 ###################################
 
