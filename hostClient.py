@@ -199,6 +199,7 @@ def withdrawFromGroup(topic, user, code) :
     topic_re = "%s/Re" % (topic)
     if result == True :
         client.publish(topic_re,"true")
+        notifyMemberChange(code)
     else :
         client.publish(topic_re,"false")
 
@@ -230,6 +231,16 @@ def getRecord(topic, user, code) :
         i = i + 1
     client.publish(topic_re,msg,2,False)
     #print(msg)
+
+def notifyMemberChange(code) :
+    global db, client
+    memberID = db.getRoomMember(code)
+    mList = memberID.split("-")
+    for i in range(0,len(mList)) :
+        member = mList[i]
+        msg = code + "/t" + memberID
+        topic = "IDF/MemberChange/%s" % (member)
+        client.publish(topic,msg,2,False)
 
 ###################################
 
