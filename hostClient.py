@@ -2,7 +2,9 @@
 
 import paho.mqtt.client as mqtt
 import time, signal, sys, threading
-import db_Handler, ChatRoom, Record
+from db_Handler import DBHandler
+import pymysql
+import ChatRoom, Record
 import identifier as idf
 import importlib
 import datetime
@@ -14,8 +16,6 @@ client = None
 
 mqtt_loop = False
 
-db = db_Handler.DBHandler()
-db.connect()
 
 ###################################
 
@@ -75,35 +75,38 @@ def mqtt_client_thread():
 
 def hall(topic, msg) :
     print("-------  into hall  -------\n")
+    conn = DBHandler.connect()
+    cursor = conn.cursor()
+    db = DBHandler(conn,cursor)
     category = topic.split("/")[0]
     identifier = topic.split("/")[1]
     user = topic.split("/")[2]
 
     if   category == "IDF" :
         if   identifier == idf.FriendIcon :
-            friendIcon(topic, user, msg)
+            friendIcon(db, topic, user, msg)
         elif identifier == idf.Initialize :
-            initialize(topic, user)
+            initialize(db, topic, user)
         elif identifier == idf.AddFriend :
-            addFriend(topic, user, msg)
+            addFriend(db, topic, user, msg)
         elif identifier == idf.AddGroup :
-            addGroup(topic, user, msg)
+            addGroup(db, topic, user, msg)
         elif identifier == idf.DeleteFriend :
-            deleteFriend(topic, user, msg)
+            deleteFriend(db, topic, user, msg)
         elif identifier == idf.WithdrawFromGroup :
-            withdrawFromGroup(topic, user, msg)
+            withdrawFromGroup(db, topic, user, msg)
         elif identifier == idf.SendMessage :
-            sendMessage(topic, user, msg)
+            sendMessage(db, topic, user, msg)
         elif identifier == idf.GetRecord :
-            getRecord(topic, user, msg)
+            getRecord(db, topic, user, msg)
         elif identifier == idf.Login :
-            login(topic, user, msg)
+            login(db, topic, user, msg)
     elif category == "Service" :
         if   identifier == idf.AddFriendNotification :
             addFriendNotification(topic, user, msg)
 
-def login(topic, user, msg) :
-    global db, client
+def login(db, topic, user, msg) :
+    global client
     result = db.login(msg)
     if result == True :
         msg = "True," + msg
@@ -112,16 +115,16 @@ def login(topic, user, msg) :
     topic_re = "%s/Re" % (topic)
     client.publish(topic_re,msg,2,False)
 
-def friendIcon(topic, user, msg) :
-    global db, client
+def friendIcon(db, topic, user, msg) :
+    global client
     ID = msg.split(":")[1]
     img = db.getImage(ID)
     topic_re = "%s/Re" % (topic)
     topic_re = topic_re.replace("FriendIcon","FriendIcon," + msg)
     client.publish(topic_re,img,2,False)
 
-def initialize(topic, user) :
-    global db, client
+def initialize(db, topic, user) :
+    global client
     L = db.getInitInfo(user)
     topic_re = "%s/Re" % (topic)
     msg = ""
@@ -137,8 +140,8 @@ def initialize(topic, user) :
         i = i + 1
     client.publish(topic_re,msg,2,False)
 
-def addFriend(topic, user, friend) :
-    global db, client
+def addFriend(db, topic, user, friend) :
+    global client
     result = db.addFriend(user,friend)
     topic_re = "%s/Re" % (topic)
     if result == True :
@@ -154,8 +157,8 @@ def addFriend(topic, user, friend) :
     else :
         client.publish(topic_re,"false")
 
-def deleteFriend(topic, user, msg) :
-    global db, client
+def deleteFriend(db, topic, user, msg) :
+    global client
     friendID = msg.split("/")[0]
     code = msg.split("/")[1]
     result = db.deleteFriend(user, friendID, code)
@@ -170,8 +173,8 @@ def deleteFriend(topic, user, msg) :
     else :
         client.publish(topic_re,"false")
 
-def addGroup(topic, user, member_str) :
-    global db, client
+def addGroup(db, topic, user, member_str) :
+    global client
     L = member_str.split("\t")
     groupName = L[0]
     L.remove(L[0])
@@ -193,18 +196,18 @@ def addGroup(topic, user, member_str) :
     else :
         client.publish(topic_re,"false")
 
-def withdrawFromGroup(topic, user, code) :
-    global db, client
+def withdrawFromGroup(db, topic, user, code) :
+    global client
     result = db.withdrawFromGroup(user, code)
     topic_re = "%s/Re" % (topic)
     if result == True :
         client.publish(topic_re,"true")
-        notifyMemberChange(code)
+        notifyMemberChange(db, code)
     else :
         client.publish(topic_re,"false")
 
-def sendMessage(topic, user, msg) :
-    global db, client
+def sendMessage(db, topic, user, msg) :
+    global client
     topic_splitLine = topic.split("/")
     msg_splitLine = msg.split("\t")
     code = msg_splitLine[0]
@@ -217,8 +220,8 @@ def sendMessage(topic, user, msg) :
         topic_re = "%s/Re" % (topic_splitLine[0] + "/" + topic_splitLine[1] + "/" + R)
         client.publish(topic_re,msg)
 
-def getRecord(topic, user, code) :
-    global db, client
+def getRecord(db, topic, user, code) :
+    global client
     L = db.getRecord(code)
     topic_re = "%s/Re" % (topic)
     msg = ""
@@ -232,8 +235,8 @@ def getRecord(topic, user, code) :
     client.publish(topic_re,msg,2,False)
     #print(msg)
 
-def notifyMemberChange(code) :
-    global db, client
+def notifyMemberChange(db, code) :
+    global client
     memberID = db.getRoomMember(code)
     mList = memberID.split("-")
     for i in range(0,len(mList)) :
