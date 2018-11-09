@@ -362,6 +362,14 @@ class DBHandler:
 
         return
 
+    def findFCMToken(self, user) :
+        result = "empty"
+        sql = "SELECT token FROM FCMToken WHERE user = '%s'" % (user)
+        self.cursor.execute(sql)
+        if self.cursor.rowcount > 0 :
+            result = self.cousor.fetchone()
+
+        return result[0]
 ############################################################
 #d = DBHandler()
 #d.connect()

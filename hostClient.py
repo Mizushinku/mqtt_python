@@ -8,6 +8,7 @@ import ChatRoom, Record
 import identifier as idf
 import importlib
 import datetime
+import fcm
 
 #importlib.reload(sys)
 #sys.setdefaultencoding('utf-8')
@@ -219,8 +220,14 @@ def sendMessage(db, topic, user, msg) :
     msg = msg + "\t" + datetime.datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
     receiver = db.getReceiverList(code)
     for R in receiver:
-        topic_re = "%s/Re" % (topic_splitLine[0] + "/" + topic_splitLine[1] + "/" + R)
+        topic_re = "%s/%s/%s/Re" % (topic_splitLine[0], topic_splitLine[1], R)
         client.publish(topic_re,msg)
+        if R != user :
+            token = db.findFCMToken(R)
+            if token != "empty" :
+                name = db.getName(R);
+                fcm.push_notify_to_one(token,name,text)
+            
 
 def getRecord(db, topic, user, code) :
     global client
