@@ -101,6 +101,8 @@ def hall(topic, msg) :
             getRecord(db, topic, user, msg)
         elif identifier == idf.Login :
             login(db, topic, user, msg)
+        elif identifier == idf.SubmitFCMToken :
+            submitFCMToken(db, user, msg)
     elif category == "Service" :
         if   identifier == idf.AddFriendNotification :
             addFriendNotification(topic, user, msg)
@@ -248,6 +250,9 @@ def notifyMemberChange(db, code) :
             topic = "IDF/MemberChange/%s/Re" % (member)
             #print(msg)
             client.publish(topic,msg,2,False)
+
+def submitFCMToken(db, user, token) :
+    db.submitFCMToken(user, token)
 
 ###################################
 

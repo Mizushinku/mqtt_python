@@ -10,3 +10,5 @@ GetRecord = "GetRecord"
 Login = "Login"
 
 AddFriendNotification = "AddFriendNotification"
+
+SubmitFCMToken = "SubmitFCMToken"

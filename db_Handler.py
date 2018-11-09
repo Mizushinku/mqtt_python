@@ -352,6 +352,16 @@ class DBHandler:
     def cmp(self, a, b) :
         return (a > b) - (a < b)
 
+    def submitFCMToken(self, user, token) :
+        try :
+            sql = "INSERT INTO FCMToken(user, token) VALUES('%s', '%s') ON DUPLICATE KEY UPDATE token = '%s'" % (user, token, token)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except :
+            self.conn.rollback()
+
+        return
+
 ############################################################
 #d = DBHandler()
 #d.connect()
