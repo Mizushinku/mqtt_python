@@ -1,3 +1,3 @@
 import fcm
 
-fcm.push_notify_to_one("eC8N9alGwio:APA91bH1Oa-3cznZq3-Jh6KostwsPIF5R-91cOpZp0ZyvdM9z1mgGEmbqP_zi5iqnQ2AVJ6OgyfzXNkU1lVoP7Ajt3z3DOePp3QjEBCai5N-0q1dYOF9LuW8b8j1IFXrsev9mOBUu0I_", "HIIII", "dadadadada!")
+fcm.push_notify_to_one("cWZDAkt-zCs:APA91bGAZ2aEU_PBdFDxgEeYFcEIz15a4kfH5FQ4m-h5YiCfW2wy4R57KYAGS6KM1a8xM94GW69MB5Bobh_QolPvUcQdc4Ooa7qAi4t6oCkBfF3uUgqNwFN_XEwSoLGZBfqrXZnOcLMU", "WRYYYYY!", "壓路機だッ!!!!!?")
