@@ -367,7 +367,7 @@ class DBHandler:
         sql = "SELECT token FROM FCMToken WHERE user = '%s'" % (user)
         self.cursor.execute(sql)
         if self.cursor.rowcount > 0 :
-            result = self.cousor.fetchone()
+            result = self.cursor.fetchone()
 
         return result[0]
 ############################################################
