@@ -102,6 +102,8 @@ def hall(topic, msg) :
             getRecord(db, topic, user, msg)
         elif identifier == idf.Login :
             login(db, topic, user, msg)
+        elif identifier == idf.InviteFriend :
+            inviteFriend(db, topic, msg)
         elif identifier == idf.SubmitFCMToken :
             submitFCMToken(db, user, msg)
     elif category == "Service" :
@@ -227,7 +229,7 @@ def sendMessage(db, topic, user, msg) :
             if token != "empty" :
                 name = db.getName(R);
                 fcm.push_notify_to_one(token,name,text)
-            
+
 
 def getRecord(db, topic, user, code) :
     global client
@@ -243,6 +245,35 @@ def getRecord(db, topic, user, code) :
         i = i + 1
     client.publish(topic_re,msg,2,False)
     #print(msg)
+
+def inviteFriend(db, topic, msg) :
+    global client
+    code = msg.split("\t")[0]
+    member = msg.split("\t")[1]
+    mList = member.split(",")
+    flag = False
+    for i in range(0, len(mList)) :
+        memberID = mList[i]
+        if memberID == "" :
+            break
+        else :
+            roomName = db.getRoomName(code)
+            result = db.hasRoom(memberID, code)
+            if result == False:
+                flag = True
+                db.inviteNewFriend(code,roomName,memberID)
+                sendNewChatroom(db,code,roomName,memberID)
+    if flag == True:
+        notifyMemberChange(db,code)
+
+def sendNewChatroom(db, code, roomName, memberID) :
+    global client
+    topic = "IDF/SendNewChatroom/%s/Re" % (memberID)
+    member = db.getRoomMember(code)
+    Rmsg = db.getLastMSG(code)
+    Rmsg_Date = db.getLastMSGTime(code)
+    msg = "%s\t%s\t%s\t%s\t%s\t%s" % (code, roomName, member,"G", Rmsg, Rmsg_Date)
+    client.publish(topic,msg,2,False)
 
 def notifyMemberChange(db, code) :
     global client

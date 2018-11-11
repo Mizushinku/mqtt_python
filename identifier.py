@@ -8,6 +8,7 @@ WithdrawFromGroup = "WithdrawFromGroup"
 SendMessage = "SendMessage"
 GetRecord = "GetRecord"
 Login = "Login"
+InviteFriend = "InviteFriend"
 
 AddFriendNotification = "AddFriendNotification"
 

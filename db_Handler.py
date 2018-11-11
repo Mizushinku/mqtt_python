@@ -85,6 +85,15 @@ class DBHandler:
 
         return result
 
+    def hasRoom(self, user, code) :
+        self.re_connect()
+        result = False
+        sql = "SELECT null FROM roommap WHERE member = '%s' AND code = '%s'" % (user, code)
+        self.cursor.execute(sql)
+        if self.cursor.rowcount > 0 :
+            result = True
+        return result
+
     def addFriend(self, user, friend) :
         self.re_connect()
         # global cursor, conn
@@ -208,6 +217,13 @@ class DBHandler:
             room.memberID = self.getRoomMember(room.code)
         return initInfo
 
+    def getRoomName(self,code) :
+        self.re_connect()
+        sql = "SELECT GroupName FROM roommap WHERE code = '%s'" % (code)
+        self.cursor.execute(sql)
+        row = self.cursor.fetchone()
+        return row[0]
+
     def getRoomMember(self, code):
         self.re_connect()
         # global cursor
@@ -222,6 +238,7 @@ class DBHandler:
                 member += "-%s" % (row[0])
         return member
 
+
     def getReceiverList(self, code) :
         self.re_connect()
         # global cursor
@@ -234,6 +251,15 @@ class DBHandler:
             receiverList.append(row[0])
 
         return receiverList
+
+    def inviteNewFriend(self, code, roomName, memberID) :
+        self.re_connect()
+        try :
+            sql = "INSERT INTO roommap(code,GroupName,member,Type) VALUES('%s','%s','%s','G')" % (code, roomName, memberID)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except:
+            self.conn.rollback()
 
     def storeRecord(self, code, sender, MSG) :
         self.re_connect()
