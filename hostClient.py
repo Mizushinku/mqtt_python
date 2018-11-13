@@ -227,7 +227,7 @@ def sendMessage(db, topic, user, msg) :
         if R != user :
             token = db.findFCMToken(R)
             if token != "empty" :
-                name = db.getName(R);
+                name = db.getName(user);
                 fcm.push_notify_to_one(token,name,text)
 
 
