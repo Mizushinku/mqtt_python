@@ -226,10 +226,9 @@ def sendMessage(db, topic, user, msg) :
         client.publish(topic_re,msg)
         if R != user :
             token = db.findFCMToken(R)
-            if token != "empty" :
+            if token != "e" :
                 name = db.getName(user);
                 fcm.push_notify_to_one(token,name,text)
-
 
 def getRecord(db, topic, user, code) :
     global client
