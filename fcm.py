@@ -6,7 +6,8 @@ def push_notify_to_one(registration_id, mt, mb) :
 
     data_message = {
         "msgTitle" : mt,
-        "msgText" : mb
+        "msgText" : mb,
+        "code" : "393BA46A63AFC8CF372D58FA71A52642"
     }
 
     result = push_service.single_device_data_message(registration_id=registration_id, data_message=data_message)
