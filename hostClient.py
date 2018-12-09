@@ -22,7 +22,10 @@ mqtt_loop = False
 
 def on_message(client, userdata, message):
     topic = message.topic
-    msg = str(message.payload.decode("utf-8"))
+    if topic.split("/")[1] == idf.SendImg :
+        msg = message.payload
+    else :
+        msg = str(message.payload.decode("utf-8"))
     thread = threading.Thread(target = hall, args = (topic, msg))
     thread.start()
 
@@ -98,6 +101,8 @@ def hall(topic, msg) :
             withdrawFromGroup(db, topic, user, msg)
         elif identifier == idf.SendMessage :
             sendMessage(db, topic, user, msg)
+        elif identifier == idf.SendImg :
+            sendImg(db, topic, user, msg)
         elif identifier == idf.GetRecord :
             getRecord(db, topic, user, msg)
         elif identifier == idf.Login :
@@ -229,6 +234,9 @@ def sendMessage(db, topic, user, msg) :
             if token != "e" :
                 name = db.getName(user);
                 fcm.push_notify_to_one(token,name,text,code)
+
+def sendImg(db, topic, user, imgBytes) :
+    print("receive img byte array")
 
 def getRecord(db, topic, user, code) :
     global client
