@@ -9,6 +9,9 @@ import identifier as idf
 import importlib
 import datetime
 import fcm
+import os
+import io
+from PIL import Image
 
 #importlib.reload(sys)
 #sys.setdefaultencoding('utf-8')
@@ -236,7 +239,8 @@ def sendMessage(db, topic, user, msg) :
                 fcm.push_notify_to_one(token,name,text,code)
 
 def sendImg(db, topic, user, imgBytes) :
-    print("receive img byte array")
+    image = Image.open(io.BytesIO(imgBytes))
+    image.save(".\\imgOut\\out.jpeg")
 
 def getRecord(db, topic, user, code) :
     global client
