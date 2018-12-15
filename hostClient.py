@@ -56,6 +56,8 @@ def mqtt_client_thread():
 
     topic = "IDF/+/+"
     client.subscribe(topic)
+    topic = "IDF/SendImg/+/+"
+    client.subscribe(topic)
     topic = "Service/+/+"
     client.subscribe(topic)
 
@@ -235,24 +237,47 @@ def sendMessage(db, topic, user, msg) :
         if R != user :
             token = db.findFCMToken(R)
             if token != "e" :
-                name = db.getName(user);
+                name = db.getName(user)
                 fcm.push_notify_to_one(token,name,text,code)
 
 def sendImg(db, topic, user, imgBytes) :
+    tsl = topic.split("/")
+    code = tsl[3]
+    path = "./image/%s/%s/" % (code, user)
+    mkdir(path)
+    time_float = time.time()
+    path = "%s%s" % (path, time_float)  #I don't want the '.' in the float, next line replace
+    path = path.replace(".", "")        #it will make the "./path/" to "/path"
+    path = ".%s.%s" % (path, "jpeg")    #so need to add the '.' back in the head
     image = Image.open(io.BytesIO(imgBytes))
-    image.save(".\\imgOut\\out.jpeg")
+    image.save(path)
+
+    t = db.storeRecord(code, user, path, 'img')
+    t_str = datetime.datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
+    receiver = db.getReceiverList(code)
+    for R in receiver:
+        topic_re = "%s/%s/%s/%s/%s/Re" % (tsl[0], tsl[1], R, code, t_str)
+        client.publish(topic_re, path)
+        if R != user :
+            token = db.findFCMToken(R)
+            if token != "e" :
+                name = db.getName(user)
+                fcm.push_notify_to_one(token,name,"a new image",code)
 
 def getRecord(db, topic, user, code) :
     global client
     L = db.getRecord(code)
     topic_re = "%s/Re" % (topic)
     msg = ""
+    fst = True
     for i in range(0,len(L)) :
         R = L[i]
-        if i == 0:
-            msg += "%s\t%s\t%s" % (R.sender, R.MSG, R.time)
-        else :
-            msg += ",%s\t%s\t%s" % (R.sender, R.MSG, R.time)
+        if R.type == 'text' or True :
+            if fst:
+                msg += "%s\t%s\t%s" % (R.sender, R.MSG, R.time)
+                fst = False
+            else :
+                msg += ",%s\t%s\t%s" % (R.sender, R.MSG, R.time)
         i = i + 1
     client.publish(topic_re,msg,2,False)
     #print(msg)
@@ -310,6 +335,12 @@ def addFriendNotification(topic, user, friendName) :
     topic_re = "%s/Re" % (topic)
     msg = friendName
     client.publish(topic_re,msg,2,False)
+
+def mkdir(path) :
+    path = os.path.abspath(path)
+    folder = os.path.exists(path)
+    if not folder :
+        os.makedirs(path)
 
 ###################################
 

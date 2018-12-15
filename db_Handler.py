@@ -261,11 +261,11 @@ class DBHandler:
         except:
             self.conn.rollback()
 
-    def storeRecord(self, code, sender, MSG) :
+    def storeRecord(self, code, sender, MSG, type_t = 'text') :
         self.re_connect()
         # global cursor, conn
         try :
-            sql = "INSERT INTO Record(code,sender,MSG) VALUES('%s','%s','%s')" % (code, sender, MSG)
+            sql = "INSERT INTO Record(code,sender,MSG,type) VALUES('%s','%s','%s','%s')" % (code, sender, MSG, type_t)
             self.cursor.execute(sql)
             self.conn.commit()
         except :
@@ -297,23 +297,26 @@ class DBHandler:
         # global cursor
         self.arrangeRecord(code)
         record = list(())
-        sql = "SELECT sender, MSG, time FROM Record WHERE code = '%s'" % (code)
+        sql = "SELECT sender, MSG, time, type FROM Record WHERE code = '%s'" % (code)
         self.cursor.execute(sql)
 
         for i in range(0,self.cursor.rowcount) :
             row = self.cursor.fetchone()
-            record.append(Record.Record(row[0], row[1], row[2]))
+            record.append(Record.Record(row[0], row[1], row[2], row[3]))
 
         return record
 
     def getLastMSG(self, code) :
         self.re_connect()
         # global cursor
-        sql = "SELECT MSG FROM record WHERE code = '%s' ORDER BY time DESC LIMIT 1" % (code)
+        sql = "SELECT MSG, type FROM record WHERE code = '%s' ORDER BY time DESC LIMIT 1" % (code)
         self.cursor.execute(sql)
         if self.cursor.rowcount > 0 :
             row = self.cursor.fetchone()
-            return row[0]
+            if row[1] == 'text' :
+                return row[0]
+            else :
+                return 'a new image'
         else :
             return 'No History'
     def getLastMSGTime(self, code) :
