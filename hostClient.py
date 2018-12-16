@@ -58,6 +58,8 @@ def mqtt_client_thread():
     client.subscribe(topic)
     topic = "IDF/SendImg/+/+"
     client.subscribe(topic)
+    topic = "IDF/RecordImgBack/+/+"
+    client.subscribe(topic)
     topic = "Service/+/+"
     client.subscribe(topic)
 
@@ -110,6 +112,8 @@ def hall(topic, msg) :
             sendImg(db, topic, user, msg)
         elif identifier == idf.GetRecord :
             getRecord(db, topic, user, msg)
+        elif identifier == idf.RecordImgBack :
+            RecordImgBack(db, topic, user, msg)
         elif identifier == idf.Login :
             login(db, topic, user, msg)
         elif identifier == idf.InviteFriend :
@@ -269,18 +273,23 @@ def getRecord(db, topic, user, code) :
     L = db.getRecord(code)
     topic_re = "%s/Re" % (topic)
     msg = ""
-    fst = True
     for i in range(0,len(L)) :
         R = L[i]
-        if R.type == 'text' or True :
-            if fst:
-                msg += "%s\t%s\t%s" % (R.sender, R.MSG, R.time)
-                fst = False
-            else :
-                msg += ",%s\t%s\t%s" % (R.sender, R.MSG, R.time)
+        if i == 0:
+            msg += "%s\t%s\t%s\t%s" % (R.sender, R.MSG, R.time, R.type)
+        else :
+            msg += ",%s\t%s\t%s\t%s" % (R.sender, R.MSG, R.time, R.type)
         i = i + 1
     client.publish(topic_re,msg,2,False)
-    #print(msg)
+
+def RecordImgBack(db, topic, user, path) :
+    global client
+    with io.BytesIO() as bimg:
+        with Image.open(path) as img:
+            img.save(bimg, 'JPEG')
+        image = bimg.getvalue()
+    topic_re = "%s/Re" % (topic)
+    client.publish(topic_re, image, 2, False)
 
 def inviteFriend(db, topic, msg) :
     global client
