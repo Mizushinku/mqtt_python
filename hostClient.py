@@ -260,7 +260,7 @@ def sendImg(db, topic, user, imgBytes) :
     t_str = datetime.datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
     receiver = db.getReceiverList(code)
     for R in receiver:
-        topic_re = "%s/%s/%s/%s/%s/Re" % (tsl[0], tsl[1], R, code, t_str)
+        topic_re = "%s/%s/%s/%s/%s/%s/Re" % (tsl[0], tsl[1], R, user, code, t_str)
         client.publish(topic_re, imgBytes)
         if R != user :
             token = db.findFCMToken(R)
