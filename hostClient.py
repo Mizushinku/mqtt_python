@@ -98,6 +98,10 @@ def hall(topic, msg) :
             friendIcon(db, topic, user, msg)
         elif identifier == idf.Initialize :
             initialize(db, topic, user)
+        elif identifier == idf.GetUserData :
+            getUserData(db, topic, user)
+        elif identifier == idf.GetUserIcon :
+            getUserIcon(db, topic, user)
         elif identifier == idf.AddFriend :
             addFriend(db, topic, user, msg)
         elif identifier == idf.AddGroup :
@@ -157,6 +161,18 @@ def initialize(db, topic, user) :
             msg += (",%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.memberID, R.type, Rmsg, Rmsg_Date))
         #print(R.memberID)
         i = i + 1
+    client.publish(topic_re,msg,2,False)
+
+def getUserData(db, topic, user) :
+    global client
+    msg = db.getName(user)
+    topic_re = "%s/Re" % (topic)
+    client.publish(topic_re,msg,2,False)
+
+def getUserIcon(db, topic, user) :
+    global client
+    msg = db.getImage(user)
+    topic_re = "%s/Re" % (topic)
     client.publish(topic_re,msg,2,False)
 
 def addFriend(db, topic, user, friend) :
