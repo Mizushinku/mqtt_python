@@ -354,6 +354,13 @@ class DBHandler:
         row = self.cursor.fetchone()
         return row[0]
 
+    def getUserImagePath(self, user) :
+        self.re_connect()
+        sql = "SELECT image_path FROM students WHERE StudentID = '%s'" % (user)
+        self.cursor.execute(sql)
+        row = self.cursor.fetchone()
+        return row[0]
+
     def getName(self, user) :
         # global cursor
         sql = "SELECT Name FROM students WHERE StudentID = '%s'" % (user)

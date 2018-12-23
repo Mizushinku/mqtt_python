@@ -141,7 +141,8 @@ def login(db, topic, user, msg) :
 def friendIcon(db, topic, user, msg) :
     global client
     ID = msg.split(":")[1]
-    img = db.getImage(ID)
+    img_path = db.getUserImagePath(ID)
+    img = getImageByPath(img_path)
     topic_re = "%s/Re" % (topic)
     topic_re = topic_re.replace("FriendIcon","FriendIcon," + msg)
     client.publish(topic_re,img,2,False)
@@ -171,7 +172,8 @@ def getUserData(db, topic, user) :
 
 def getUserIcon(db, topic, user) :
     global client
-    msg = db.getImage(user)
+    img_path = db.getUserImagePath(user)
+    msg = getImageByPath(img_path)
     topic_re = "%s/Re" % (topic)
     client.publish(topic_re,msg,2,False)
 
@@ -300,10 +302,7 @@ def getRecord(db, topic, user, code) :
 
 def RecordImgBack(db, topic, user, path) :
     global client
-    with io.BytesIO() as bimg:
-        with Image.open(path) as img:
-            img.save(bimg, 'JPEG')
-        image = bimg.getvalue()
+    image = getImageByPath(path)
     topic_re = "%s/Re" % (topic)
     client.publish(topic_re, image, 2, False)
 
@@ -366,6 +365,13 @@ def mkdir(path) :
     folder = os.path.exists(path)
     if not folder :
         os.makedirs(path)
+
+def getImageByPath(path) :
+    with io.BytesIO() as bimg :
+        with Image.open(path) as img :
+            img.save(bimg, 'JPEG')
+        image = bimg.getvalue()
+    return image
 
 ###################################
 
