@@ -207,11 +207,11 @@ class DBHandler:
             #initInfo.append(ChatRoom.ChatRoom(code, name, friend, "F"))
             memberID = self.getRoomMember(code)
             initInfo.append(ChatRoom.ChatRoom(code, name, memberID, "F"))
-        sql = "SELECT code, GroupName FROM RoomMap WHERE GroupName IS NOT NULL AND member = '%s'" % (user)
+        sql = "SELECT code, GroupName, Type FROM RoomMap WHERE GroupName IS NOT NULL AND member = '%s'" % (user)
         self.cursor.execute(sql)
         for i in range(0,self.cursor.rowcount) :
             row = self.cursor.fetchone()
-            initInfo.append(ChatRoom.ChatRoom(row[0], row[1], "", "G"))
+            initInfo.append(ChatRoom.ChatRoom(row[0], row[1], "", row[2]))
         for i in range(0,len(initInfo)) :
             room = initInfo[i]
             room.memberID = self.getRoomMember(room.code)
@@ -407,7 +407,11 @@ class DBHandler:
 
         return result[0]
 ############################################################
-#d = DBHandler()
-#d.connect()
-#L = list(("F74056255","F74051043","F74054025","F64051114"))
-#d.createChatRoom(L,"G","G11_睏zZZ")
+'''
+conn = DBHandler.connect()
+cursor = conn.cursor()
+db = DBHandler(conn,cursor)
+code = db.MD5("未命名課程")
+print(code)
+'''
+
