@@ -446,6 +446,7 @@ class DBHandler:
         else :
             return False
 ############################################################
+'''
 conn = DBHandler.connect()
 cursor = conn.cursor()
 db = DBHandler(conn,cursor)
@@ -457,3 +458,4 @@ if db.addToClass("課程9", "F74056255", "F64051114") :
     print("add to class succeed")
 else :
     print("error adding to class")
+'''
