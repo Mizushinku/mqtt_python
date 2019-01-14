@@ -406,12 +406,54 @@ class DBHandler:
             result = self.cursor.fetchone()
 
         return result[0]
+
+    def createClass(self, className, keeper) :
+        if not self.confirmAccount(keeper) :
+            return False
+        code = self.MD5(("class:%s, keeper:%s" % (className, keeper)))
+        if self.codeExist(code) :
+            return False
+        else :
+            try :
+                sql = "INSERT INTO roommap(code, GroupName, member, Type) VALUES('%s', '%s', '%s', 'C')" % (code, className, keeper)
+                self.cursor.execute(sql)
+                self.conn.commit()
+                sql = "INSERT INTO classkeeper(code, className, keeper) VALUES('%s', '%s', '%s')" % (code, className, keeper)
+                self.cursor.execute(sql)
+                self.conn.commit()
+            except :
+                self.conn.rollback()
+            return True
+
+    def addToClass(self, className, keeper, student) :
+        if not self.confirmAccount(student) :
+            return False
+        sql = "SELECT code FROM classkeeper WHERE className = '%s' AND keeper = '%s'" % (className, keeper)
+        self.cursor.execute(sql)
+        if self.cursor.rowcount > 0 :
+            code = self.cursor.fetchone()[0]
+            sql = "SELECT null FROM roommap WHERE member = '%s'" % (student)
+            self.cursor.execute(sql)
+            if self.cursor.rowcount > 0 :
+                return False
+            try :
+                sql = "INSERT INTO roommap(code, GroupName, member, Type) VALUES('%s', '%s', '%s', 'C')" % (code, className, student)
+                self.cursor.execute(sql)
+                self.conn.commit()
+            except :
+                self.conn.rollback()
+            return True
+        else :
+            return False
 ############################################################
-'''
 conn = DBHandler.connect()
 cursor = conn.cursor()
 db = DBHandler(conn,cursor)
-code = db.MD5("未命名課程")
-print(code)
-'''
-
+if db.createClass("課程9", "F74056255") :
+    print("create class succeed")
+else :
+    print("error creating class")
+if db.addToClass("課程9", "F74056255", "F64051114") :
+    print("add to class succeed")
+else :
+    print("error adding to class")
