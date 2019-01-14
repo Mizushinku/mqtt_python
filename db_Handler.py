@@ -446,16 +446,11 @@ class DBHandler:
         else :
             return False
 ############################################################
-'''
-conn = DBHandler.connect()
-cursor = conn.cursor()
-db = DBHandler(conn,cursor)
-if db.createClass("課程9", "F74056255") :
-    print("create class succeed")
-else :
-    print("error creating class")
-if db.addToClass("課程9", "F74056255", "F64051114") :
-    print("add to class succeed")
-else :
-    print("error adding to class")
-'''
+if __name__ == "__main__" :
+    conn = DBHandler.connect()
+    cursor = conn.cursor()
+    db = DBHandler(conn,cursor)
+    if db.addFriend("F74056255", "M40021010") :
+        print("add friend succeed")
+    else :
+        print("error adding friend")
