@@ -445,6 +445,15 @@ class DBHandler:
             return True
         else :
             return False
+
+    def getClassKeeper(self, code) :
+        sql = "SELECT keeper FROM classkeeper WHERE code = '%s'" % (code)
+        self.cursor.execute(sql)
+        if self.cursor.rowcount > 0 :
+            keeper = self.cursor.fetchone()[0]
+            return keeper
+        else :
+            return ""
 ############################################################
 if __name__ == "__main__" :
     conn = DBHandler.connect()

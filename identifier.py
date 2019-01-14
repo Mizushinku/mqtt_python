@@ -13,6 +13,7 @@ Login = "Login"
 InviteFriend = "InviteFriend"
 GetUserData = "GetUserData"
 GetUserIcon = "GetUserIcon"
+GetAuth = "GetAuth"
 
 AddFriendNotification = "AddFriendNotification"
 

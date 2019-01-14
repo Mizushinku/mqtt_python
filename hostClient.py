@@ -124,6 +124,8 @@ def hall(topic, msg) :
             inviteFriend(db, topic, msg)
         elif identifier == idf.SubmitFCMToken :
             submitFCMToken(db, user, msg)
+        elif identifier == idf.GetAuth :
+            getAuth(db, topic, user, msg)
     elif category == "Service" :
         if   identifier == idf.AddFriendNotification :
             addFriendNotification(topic, user, msg)
@@ -351,6 +353,17 @@ def notifyMemberChange(db, code) :
 
 def submitFCMToken(db, user, token) :
     db.submitFCMToken(user, token)
+
+def getAuth(db, topic, user, code) :
+    keeper = db.getClassKeeper(code)
+    if keeper != "" :
+        topic_re = "%s/Re" % (topic)
+        if keeper == user :
+            client.publish(topic_re, "1", 2, False)
+        else :
+            client.publish(topic_re, "0", 2, False)
+    else :
+        print("error getting Auth")
 
 ###################################
 
