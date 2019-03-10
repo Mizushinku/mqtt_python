@@ -126,6 +126,12 @@ def hall(topic, msg) :
             submitFCMToken(db, user, msg)
         elif identifier == idf.GetAuth :
             getAuth(db, topic, user, msg)
+        elif identifier == idf.AddPoster :
+            addPoster(db, topic, user, msg)
+        elif identifier == idf.GetPoster :
+            getPoster(db, topic, user, msg)
+
+
     elif category == "Service" :
         if   identifier == idf.AddFriendNotification :
             addFriendNotification(topic, user, msg)
@@ -364,6 +370,26 @@ def getAuth(db, topic, user, code) :
             client.publish(topic_re, "0", 2, False)
     else :
         print("error getting Auth")
+
+def addPoster(db, topic, user, msg) :
+    code = msg.split("\t")[0]
+    theme = msg.split("\t")[1]
+    content = msg.split("\t")[2]
+    type_t = msg.split("\t")[3]
+    db.storePoster(code, user, theme, content, type_t)
+
+def getPoster(db, topic, user, code) :
+    L = db.fetchPost(code)
+    topic_re = "%s/Re" % (topic)
+    msg = ""
+    for i in range(0, len(L)) :
+        R = L[i]
+        if i == 0 :
+            msg += "%s\t%s\t%s\t%s\t%s" % (R.sender, R.theme, R.MSG, R.time, R.type)
+        else :
+            msg += "\r%s\t%s\t%s\t%s\t%s" % (R.sender, R.theme, R.MSG, R.time, R.type)
+
+    client.publish(topic_re, msg, 2, False)
 
 ###################################
 

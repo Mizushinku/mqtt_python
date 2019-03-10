@@ -2,7 +2,7 @@
 #import MySQLdb
 import pymysql
 import sys, time, hashlib, datetime
-import ChatRoom, Record
+import ChatRoom, Record, Post
 import importlib
 import threading
 #from MySQLdb import OperationalError
@@ -454,6 +454,28 @@ class DBHandler:
             return keeper
         else :
             return ""
+
+    def storePoster(self, code, sender, theme, MSG, type_t) :
+        self.re_connect()
+        try :
+            sql = "INSERT INTO poster(code, sender, theme, MSG, type) VALUES('%s','%s','%s','%s','%s')" % (code, sender, theme, MSG, type_t)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except :
+            self.conn.rollback()
+
+    def fetchPost(self, code) :
+        self.re_connect()
+        record = list(())
+        sql = "SELECT sender, Theme, MSG, time FROM poster WHERE code = '%s' AND type = '%s'" % (code, "post")
+        self.cursor.execute(sql)
+
+        for i in range(0,self.cursor.rowcount) :
+            row = self.cursor.fetchone()
+            record.append(Post.Post(row[0],row[1],row[2],row[3],"post"))
+
+        return record
+
 ############################################################
 if __name__ == "__main__" :
     conn = DBHandler.connect()

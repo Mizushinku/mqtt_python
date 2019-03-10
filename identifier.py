@@ -14,6 +14,8 @@ InviteFriend = "InviteFriend"
 GetUserData = "GetUserData"
 GetUserIcon = "GetUserIcon"
 GetAuth = "GetAuth"
+AddPoster = "AddPoster"
+GetPoster = "GetPoster"
 
 AddFriendNotification = "AddFriendNotification"
 
