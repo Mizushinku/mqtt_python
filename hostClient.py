@@ -161,7 +161,7 @@ def initialize(db, topic, user) :
         if i == 0 :
             msg += ("%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.memberID, R.type, Rmsg, Rmsg_Date))
         else :
-            msg += (",%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.memberID, R.type, Rmsg, Rmsg_Date))
+            msg += ("\r%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.memberID, R.type, Rmsg, Rmsg_Date))
         #print(R.memberID)
         i = i + 1
     client.publish(topic_re,msg,2,False)
@@ -298,7 +298,7 @@ def getRecord(db, topic, user, code) :
         if i == 0:
             msg += "%s\t%s\t%s\t%s" % (R.sender, R.MSG, R.time, R.type)
         else :
-            msg += ",%s\t%s\t%s\t%s" % (R.sender, R.MSG, R.time, R.type)
+            msg += "\r%s\t%s\t%s\t%s" % (R.sender, R.MSG, R.time, R.type)
         i = i + 1
     client.publish(topic_re,msg,2,False)
 
