@@ -464,6 +464,12 @@ class DBHandler:
         except :
             self.conn.rollback()
 
+        sql = "SELECT time FROM poster WHERE code = '%s' AND sender = '%s' AND theme = '%s 'AND MSG = '%s'" % (code,sender,theme,MSG)
+        self.cursor.execute(sql)
+        row = self.cursor.fetchone()
+        return row[0]
+
+
     def fetchPost(self, code) :
         self.re_connect()
         record = list(())

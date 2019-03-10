@@ -376,7 +376,13 @@ def addPoster(db, topic, user, msg) :
     theme = msg.split("\t")[1]
     content = msg.split("\t")[2]
     type_t = msg.split("\t")[3]
-    db.storePoster(code, user, theme, content, type_t)
+    t = db.storePoster(code, user, theme, content, type_t)
+    msg = msg + "\t" + user + "\t" + datetime.datetime.strftime(t, '%Y-%m-%d %H:%M:%s')
+    receiver = db.getReceiverList(code)
+    for R in receiver :
+        topic_re = "IDF/AddPoster/%s/Re" % (R)
+        client.publish(topic_re, msg)
+
 
 def getPoster(db, topic, user, code) :
     L = db.fetchPost(code)
@@ -388,6 +394,7 @@ def getPoster(db, topic, user, code) :
             msg += "%s\t%s\t%s\t%s\t%s" % (R.sender, R.theme, R.MSG, R.time, R.type)
         else :
             msg += "\r%s\t%s\t%s\t%s\t%s" % (R.sender, R.theme, R.MSG, R.time, R.type)
+
 
     client.publish(topic_re, msg, 2, False)
 
