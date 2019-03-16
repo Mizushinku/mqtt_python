@@ -482,6 +482,18 @@ class DBHandler:
 
         return record
 
+    def fetchPostReply(self, code, theme) :
+        self.re_connect()
+        record = list()
+        sql = "SELECT sender, MSG, time FROM poster WHERE code = '%s' AND theme = '%s' AND type = '%s'" % (code, theme, "reply")
+        self.cursor.execute(sql)
+
+        for i in range(0,self.cursor.rowcount) :
+            row = self.cursor.fetchone()
+            record.append(Post.Post(row[0],theme,row[1],row[2],"reply"))
+
+        return record
+
 ############################################################
 if __name__ == "__main__" :
     conn = DBHandler.connect()

@@ -130,7 +130,8 @@ def hall(topic, msg) :
             addPoster(db, topic, user, msg)
         elif identifier == idf.GetPoster :
             getPoster(db, topic, user, msg)
-
+        elif identifier == idf.GetPosterReply :
+            getPosterReply(db, topic, user, msg)
 
     elif category == "Service" :
         if   identifier == idf.AddFriendNotification :
@@ -395,9 +396,22 @@ def getPoster(db, topic, user, code) :
         else :
             msg += "\r%s\t%s\t%s\t%s\t%s" % (R.sender, R.theme, R.MSG, R.time, R.type)
 
-
     client.publish(topic_re, msg, 2, False)
 
+def getPosterReply(db, topic, user, msg) :
+    code = msg.split("\t")[0]
+    theme = msg.split("\t")[1]
+    L = db.fetchPostReply(code, theme)
+    topic_re = "%s/Re" % (topic)
+    msg = ""
+    for i in range(0, len(L)) :
+        R = L[i]
+        if i == 0 :
+            msg += "%s\t%s\t%s\t%s\t%s" % (R.sender, R.theme, R.MSG, R.time, R.type)
+        else :
+            msg += "\r%s\t%s\t%s\t%s\t%s" % (R.sender, R.theme, R.MSG, R.time, R.type)
+
+    client.publish(topic_re, msg, 2, False)
 ###################################
 
 def addFriendNotification(topic, user, friendName) :

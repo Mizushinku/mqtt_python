@@ -16,6 +16,7 @@ GetUserIcon = "GetUserIcon"
 GetAuth = "GetAuth"
 AddPoster = "AddPoster"
 GetPoster = "GetPoster"
+GetPosterReply = "GetPosterReply"
 
 AddFriendNotification = "AddFriendNotification"
 
