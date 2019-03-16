@@ -132,6 +132,10 @@ def hall(topic, msg) :
             getPoster(db, topic, user, msg)
         elif identifier == idf.GetPosterReply :
             getPosterReply(db, topic, user, msg)
+        elif identifier == idf.DeletePoster :
+            deletePost(db, topic, user, msg)
+        elif identifier == idf.DeletePosterReply :
+            deleteReply(db, topic, user, msg)
 
     elif category == "Service" :
         if   identifier == idf.AddFriendNotification :
@@ -373,6 +377,7 @@ def getAuth(db, topic, user, code) :
         print("error getting Auth")
 
 def addPoster(db, topic, user, msg) :
+    global client
     code = msg.split("\t")[0]
     theme = msg.split("\t")[1]
     content = msg.split("\t")[2]
@@ -386,6 +391,7 @@ def addPoster(db, topic, user, msg) :
 
 
 def getPoster(db, topic, user, code) :
+    global client
     L = db.fetchPost(code)
     topic_re = "%s/Re" % (topic)
     msg = ""
@@ -399,6 +405,7 @@ def getPoster(db, topic, user, code) :
     client.publish(topic_re, msg, 2, False)
 
 def getPosterReply(db, topic, user, msg) :
+    global client
     code = msg.split("\t")[0]
     theme = msg.split("\t")[1]
     L = db.fetchPostReply(code, theme)
@@ -412,6 +419,18 @@ def getPosterReply(db, topic, user, msg) :
             msg += "\r%s\t%s\t%s\t%s\t%s" % (R.sender, R.theme, R.MSG, R.time, R.type)
 
     client.publish(topic_re, msg, 2, False)
+
+def deletePost(db, topic, user, msg) :
+    code = msg.split("\t")[0]
+    theme = msg.split("\t")[1]
+    db.deletePost(code, theme)
+
+def deleteReply(db, topic, user, msg) :
+    code = msg.split("\t")[0]
+    theme = msg.split("\t")[1]
+    content = msg.split("\t")[2]
+    db.deleteReply(user, code, theme, content)
+
 ###################################
 
 def addFriendNotification(topic, user, friendName) :

@@ -17,6 +17,9 @@ GetAuth = "GetAuth"
 AddPoster = "AddPoster"
 GetPoster = "GetPoster"
 GetPosterReply = "GetPosterReply"
+DeletePoster = "DeletePoster"
+DeletePosterReply = "DeletePosterReply"
+
 
 AddFriendNotification = "AddFriendNotification"
 

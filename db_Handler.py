@@ -494,6 +494,24 @@ class DBHandler:
 
         return record
 
+    def deletePost(self, code, theme) :
+        self.re_connect()
+        try :
+            sql = "DELETE FROM poster WHERE code = '%s' AND Theme = '%s'" % (code, theme)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except :
+            self.conn.rollback()
+
+    def deleteReply(self, sender, code, theme, content) :
+        self.re_connect()
+        try :
+            sql = "DELETE FROM poster WHERE sender = '%s' AND code = '%s' AND Theme = '%s' AND MSG = '%s'" % (sender, code, theme, content)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except :
+            self.conn.rollback()
+
 ############################################################
 if __name__ == "__main__" :
     conn = DBHandler.connect()
