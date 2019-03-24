@@ -27,6 +27,8 @@ def on_message(client, userdata, message):
     topic = message.topic
     if topic.split("/")[1] == idf.SendImg :
         msg = message.payload
+    elif topic.split("/")[1] == idf.ChangeUserIcon :
+        msg = message.payload
     else :
         msg = str(message.payload.decode("utf-8"))
     thread = threading.Thread(target = hall, args = (topic, msg))
@@ -136,6 +138,8 @@ def hall(topic, msg) :
             deletePost(db, topic, user, msg)
         elif identifier == idf.DeletePosterReply :
             deleteReply(db, topic, user, msg)
+        elif identifier == idf.ChangeUserIcon :
+            changeUserIcon(db, topic, user, msg)
 
     elif category == "Service" :
         if   identifier == idf.AddFriendNotification :
@@ -430,6 +434,13 @@ def deleteReply(db, topic, user, msg) :
     theme = msg.split("\t")[1]
     content = msg.split("\t")[2]
     db.deleteReply(user, code, theme, content)
+
+def changeUserIcon(db, topic, user, msg) :
+    global client
+    
+    topic_re = "%s/Re" % (topic)
+    msg = ""
+    client.publish(topic_re, msg, 2, False)
 
 ###################################
 
