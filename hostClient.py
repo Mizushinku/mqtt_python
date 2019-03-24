@@ -435,9 +435,12 @@ def deleteReply(db, topic, user, msg) :
     content = msg.split("\t")[2]
     db.deleteReply(user, code, theme, content)
 
-def changeUserIcon(db, topic, user, msg) :
+def changeUserIcon(db, topic, user, imgBytes) :
     global client
     
+    img_path = db.getUserImagePath(user)
+    image = Image.open(io.BytesIO(imgBytes))
+    image.save(img_path)
     topic_re = "%s/Re" % (topic)
     msg = ""
     client.publish(topic_re, msg, 2, False)
