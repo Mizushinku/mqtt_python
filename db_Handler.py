@@ -512,6 +512,16 @@ class DBHandler:
         except :
             self.conn.rollback()
 
+
+    def deleteMessage(self, sender, code, time) :
+        self.re_connect()
+        try :
+            sql = "DELETE FROM record WHERE sender = '%s' AND code = '%s' AND time = '%s'" % (sender, code, time)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except :
+            self.conn.rollback()
+
 ############################################################
 if __name__ == "__main__" :
     conn = DBHandler.connect()

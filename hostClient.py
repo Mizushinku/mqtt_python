@@ -114,6 +114,8 @@ def hall(topic, msg) :
             withdrawFromGroup(db, topic, user, msg)
         elif identifier == idf.SendMessage :
             sendMessage(db, topic, user, msg)
+        elif identifier == idf.DeleteMessage :
+            deleteMessage(db, topic, user, msg)
         elif identifier == idf.SendImg :
             sendImg(db, topic, user, msg)
         elif identifier == idf.GetRecord :
@@ -437,7 +439,7 @@ def deleteReply(db, topic, user, msg) :
 
 def changeUserIcon(db, topic, user, imgBytes) :
     global client
-    
+
     img_path = db.getUserImagePath(user)
     image = Image.open(io.BytesIO(imgBytes))
     try :
@@ -449,6 +451,11 @@ def changeUserIcon(db, topic, user, imgBytes) :
     else :
         topic_re = "%s/Re" % (topic)
         client.publish(topic_re, imgBytes, 2, False)
+
+def deleteMessage(db, topic, user, msg) :
+    code = msg.split("\t")[0]
+    time = msg.split("\t")[1]
+    db.deleteMessage(user, code, time)
 
 ###################################
 
