@@ -296,7 +296,7 @@ def sendImg(db, topic, user, imgBytes) :
     receiver = db.getReceiverList(code)
     for R in receiver:
         topic_re = "%s/%s/%s/%s/%s/%s/Re" % (tsl[0], tsl[1], R, user, code, t_str)
-        client.publish(topic_re, imgBytes)
+        client.publish(topic_re, imgBytes, 2, False)
         if R != user :
             token = db.findFCMToken(R)
             if token != "e" :
@@ -440,10 +440,15 @@ def changeUserIcon(db, topic, user, imgBytes) :
     
     img_path = db.getUserImagePath(user)
     image = Image.open(io.BytesIO(imgBytes))
-    image.save(img_path)
-    topic_re = "%s/Re" % (topic)
-    msg = ""
-    client.publish(topic_re, msg, 2, False)
+    try :
+        image.save(img_path)
+    except KeyError :
+        print("KeyError On Image.Save")
+    except IOError :
+        print("IOError On Image.Save")
+    else :
+        topic_re = "%s/Re" % (topic)
+        client.publish(topic_re, imgBytes, 2, False)
 
 ###################################
 
