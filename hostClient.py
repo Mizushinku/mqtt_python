@@ -142,6 +142,8 @@ def hall(topic, msg) :
             deleteReply(db, topic, user, msg)
         elif identifier == idf.ChangeUserIcon :
             changeUserIcon(db, topic, user, msg)
+        elif identifier == idf.ChangeUserName :
+            changeUserName(db, topic, user, msg)
 
     elif category == "Service" :
         if   identifier == idf.AddFriendNotification :
@@ -451,6 +453,17 @@ def changeUserIcon(db, topic, user, imgBytes) :
     else :
         topic_re = "%s/Re" % (topic)
         client.publish(topic_re, imgBytes, 2, False)
+
+def changeUserName(db, topic, user, newName) :
+    global client
+
+    result = db.changeUserName(user, newName)
+    topic_re = "%s/Re" % (topic)
+    if result == True :
+        msg = "OK\t%s" % (newName)
+        client.publish(topic_re, msg, 2, False)
+    else :
+        client.publish(topic_re, "Error", 2, False)
 
 def deleteMessage(db, topic, user, msg) :
     code = msg.split("\t")[0]

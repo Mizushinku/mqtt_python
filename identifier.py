@@ -21,6 +21,7 @@ GetPosterReply = "GetPosterReply"
 DeletePoster = "DeletePoster"
 DeletePosterReply = "DeletePosterReply"
 ChangeUserIcon = "ChangeUserIcon"
+ChangeUserName = "ChangeUserName"
 
 
 AddFriendNotification = "AddFriendNotification"
