@@ -530,8 +530,21 @@ class DBHandler:
             self.conn.commit()
         except :
             self.conn.rollback()
+            return False
         else :
             return True;
+
+    def changeUserIntro(self, user, newIntro) :
+        self.re_connect()
+        try :
+            sql = "UPDATE students SET intro = '%s' WHERE StudentID = '%s'" % (newIntro, user)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except :
+            self.conn.rollback()
+            return False
+        else :
+            return True
 
 ############################################################
 if __name__ == "__main__" :

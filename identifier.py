@@ -22,7 +22,7 @@ DeletePoster = "DeletePoster"
 DeletePosterReply = "DeletePosterReply"
 ChangeUserIcon = "ChangeUserIcon"
 ChangeUserName = "ChangeUserName"
-
+ChangeUserIntro = "ChangeUserIntro"
 
 AddFriendNotification = "AddFriendNotification"
 
