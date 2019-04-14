@@ -2,8 +2,9 @@
 
 class ChatRoom :
 
-    def __init__(self, code, roomName, memberID, Type) :
+    def __init__(self, code, roomName, memberID, Type, intro) :
         self.code = code
         self.roomName = roomName
         self.memberID = memberID
         self.type = Type
+        self.intro = intro

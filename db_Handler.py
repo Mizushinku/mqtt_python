@@ -204,14 +204,14 @@ class DBHandler:
                 string = "%s%s" % (friend, user)
             code = self.MD5(string)
             name = self.getName(friend)
-            #initInfo.append(ChatRoom.ChatRoom(code, name, friend, "F"))
             memberID = self.getRoomMember(code)
-            initInfo.append(ChatRoom.ChatRoom(code, name, memberID, "F"))
+            intro = self.getUserIntro(friend)
+            initInfo.append(ChatRoom.ChatRoom(code, name, memberID, "F", intro))
         sql = "SELECT code, GroupName, Type FROM RoomMap WHERE GroupName IS NOT NULL AND member = '%s'" % (user)
         self.cursor.execute(sql)
         for i in range(0,self.cursor.rowcount) :
             row = self.cursor.fetchone()
-            initInfo.append(ChatRoom.ChatRoom(row[0], row[1], "", row[2]))
+            initInfo.append(ChatRoom.ChatRoom(row[0], row[1], "", row[2], ""))
         for i in range(0,len(initInfo)) :
             room = initInfo[i]
             room.memberID = self.getRoomMember(room.code)
@@ -545,6 +545,14 @@ class DBHandler:
             return False
         else :
             return True
+
+    def getUserIntro(self, user) :
+        self.re_connect()
+        sql = "SELECT intro FROM students WHERE StudentID = '%s'" % (user)
+        self.cursor.execute(sql)
+        if self.cursor.rowcount > 0 :
+            intro = self.cursor.fetchone()[0]
+            return intro
 
 ############################################################
 if __name__ == "__main__" :

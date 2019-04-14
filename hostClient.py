@@ -190,11 +190,10 @@ def initialize(db, topic, user) :
         Rmsg = db.getLastMSG(R.code)
         Rmsg_Date = db.getLastMSGTime(R.code)
         if i == 0 :
-            msg += ("%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.memberID, R.type, Rmsg, Rmsg_Date))
+            msg += ("%s\t%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.memberID, R.type, Rmsg, Rmsg_Date, R.intro))
         else :
-            msg += ("\r%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.memberID, R.type, Rmsg, Rmsg_Date))
-        #print(R.memberID)
-        i = i + 1
+            msg += ("\r%s\t%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.memberID, R.type, Rmsg, Rmsg_Date, R.intro))
+    
     client.publish(topic_re,msg,2,False)
 
 def getUserData(db, topic, user) :
