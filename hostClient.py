@@ -29,6 +29,8 @@ def on_message(client, userdata, message):
         msg = message.payload
     elif topic.split("/")[1] == idf.ChangeUserIcon :
         msg = message.payload
+    elif topic.split("/")[1] == idf.ForwardIMG :
+        msg = message.payload
     else :
         msg = str(message.payload.decode("utf-8"))
     thread = threading.Thread(target = hall, args = (topic, msg))
@@ -146,6 +148,10 @@ def hall(topic, msg) :
             changeUserName(db, topic, user, msg)
         elif identifier == idf.ChangeUserIntro :
             changeUserIntro(db, topic, user, msg)
+        elif identifier == idf.ForwardTXT :
+            forwardTXT(db, topic, user, msg)
+        elif identifier == idf.ForwardIMG :
+            forwardIMG(db, topic, user, msg)
 
     elif category == "Service" :
         if   identifier == idf.AddFriendNotification :
@@ -483,6 +489,13 @@ def deleteMessage(db, topic, user, msg) :
     code = msg.split("\t")[0]
     time = msg.split("\t")[1]
     db.deleteMessage(user, code, time)
+
+def forwardTXT(db, topic, user, msg) :
+    codes = topic.split("/")[3]
+    code_spl = codes.split(",")
+    for i in(0, len(code_spl)) :
+        code = code_spl[i]
+        print(code)
 
 ###################################
 

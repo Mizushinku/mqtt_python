@@ -23,6 +23,8 @@ DeletePosterReply = "DeletePosterReply"
 ChangeUserIcon = "ChangeUserIcon"
 ChangeUserName = "ChangeUserName"
 ChangeUserIntro = "ChangeUserIntro"
+ForwardTXT = "ForwardTXT"
+ForwardIMG = "ForwardIMG"
 
 AddFriendNotification = "AddFriendNotification"
 
