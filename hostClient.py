@@ -193,7 +193,7 @@ def initialize(db, topic, user) :
             msg += ("%s\t%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.memberID, R.type, Rmsg, Rmsg_Date, R.intro))
         else :
             msg += ("\r%s\t%s\t%s\t%s\t%s\t%s\t%s" % (R.code, R.roomName, R.memberID, R.type, Rmsg, Rmsg_Date, R.intro))
-    
+
     client.publish(topic_re,msg,2,False)
 
 def getUserData(db, topic, user) :
@@ -501,6 +501,14 @@ def forwardTXT(db, topic, user, msg) :
         topic_revise = "IDF/SendMessage/%s" % (user)
         msg_revise = "%s\t%s\t%s" % (code, user, msg)
         sendMessage(db, topic_revise, user, msg_revise)
+
+def forwardIMG(db, topic, user, msg) :
+    codes = topic.split("/")[3]
+    code_spl = codes.split(",")
+    for i in range(0, len(code_spl)) :
+        code = code_spl[i]
+        topic_revise = "IDF/SendImg/%s/%s" % (user, code)
+        sendImg(db, topic_revise, user, msg)
 
 ###################################
 
