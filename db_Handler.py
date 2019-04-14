@@ -270,7 +270,7 @@ class DBHandler:
             self.conn.commit()
         except :
             self.conn.rollback()
-        sql = "SELECT time FROM Record WHERE code = '%s' AND sender = '%s' AND MSG = '%s'" % (code, sender, MSG)
+        sql = "SELECT time FROM Record WHERE code = '%s' AND sender = '%s' AND MSG = '%s' ORDER BY time DESC LIMIT 1" % (code, sender, MSG)
         self.cursor.execute(sql)
         row = self.cursor.fetchone()
         return row[0]

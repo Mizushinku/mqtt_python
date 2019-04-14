@@ -64,6 +64,10 @@ def mqtt_client_thread():
     client.subscribe(topic)
     topic = "IDF/RecordImgBack/+/+"
     client.subscribe(topic)
+    topic = "IDF/ForwardTXT/+/+"
+    client.subscribe(topic)
+    topic = "IDF/ForwardIMG/+/+"
+    client.subscribe(topic)
     topic = "Service/+/+"
     client.subscribe(topic)
 
@@ -493,9 +497,11 @@ def deleteMessage(db, topic, user, msg) :
 def forwardTXT(db, topic, user, msg) :
     codes = topic.split("/")[3]
     code_spl = codes.split(",")
-    for i in(0, len(code_spl)) :
+    for i in range(0, len(code_spl)) :
         code = code_spl[i]
-        print(code)
+        topic_revise = "IDF/SendMessage/%s" % (user)
+        msg_revise = "%s\t%s\t%s" % (code, user, msg)
+        sendMessage(db, topic_revise, user, msg_revise)
 
 ###################################
 
