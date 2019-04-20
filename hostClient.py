@@ -285,6 +285,7 @@ def sendMessage(db, topic, user, msg) :
     t = db.storeRecord(code,sender,text)
     msg = msg + "\t" + datetime.datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
     receiver = db.getReceiverList(code)
+    roomType = db.getRoomType(code)
     for R in receiver:
         topic_re = "%s/%s/%s/Re" % (topic_splitLine[0], topic_splitLine[1], R)
         client.publish(topic_re,msg)
@@ -292,7 +293,7 @@ def sendMessage(db, topic, user, msg) :
             token = db.findFCMToken(R)
             if token != "e" :
                 name = db.getName(user)
-                fcm.push_notify_to_one(token,name,text,code)
+                fcm.push_notify_to_one(token,name,text,code,R,roomType)
 
 def sendImg(db, topic, user, imgBytes) :
     tsl = topic.split("/")
@@ -309,6 +310,7 @@ def sendImg(db, topic, user, imgBytes) :
     t = db.storeRecord(code, user, path, 'img')
     t_str = datetime.datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
     receiver = db.getReceiverList(code)
+    roomType = db.getRoomType(code)
     for R in receiver:
         topic_re = "%s/%s/%s/%s/%s/%s/Re" % (tsl[0], tsl[1], R, user, code, t_str)
         client.publish(topic_re, imgBytes, 2, False)
@@ -316,7 +318,7 @@ def sendImg(db, topic, user, imgBytes) :
             token = db.findFCMToken(R)
             if token != "e" :
                 name = db.getName(user)
-                fcm.push_notify_to_one(token,name,"a new image",code)
+                fcm.push_notify_to_one(token,name,"a new image",code,R,roomType)
 
 def getRecord(db, topic, user, code) :
     global client

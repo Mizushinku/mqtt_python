@@ -238,6 +238,14 @@ class DBHandler:
                 member += "-%s" % (row[0])
         return member
 
+    def getRoomType(self, code):
+        roomType = ""
+        sql = "SELECT Type FROM roommap WHERE code = '%s' LIMIT 1" % (code)
+        self.cursor.execute(sql)
+        if self.cursor.rowcount > 0:
+            roomType = self.cursor.fetchone()[0]
+        return roomType
+
 
     def getReceiverList(self, code) :
         self.re_connect()
