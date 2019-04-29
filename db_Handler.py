@@ -290,7 +290,7 @@ class DBHandler:
         try :
             sql = "SELECT null FROM Record WHERE code = '%s'" % (code)
             self.cursor.execute(sql)
-            keep = 20
+            keep = 50
             if self.cursor.rowcount > keep :
                 sql = "DELETE FROM Record WHERE code = '%s' ORDER BY time ASC LIMIT %d" % (code, self.cursor.rowcount - keep)
                 self.cursor.execute(sql)

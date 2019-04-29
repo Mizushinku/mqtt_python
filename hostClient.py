@@ -387,13 +387,18 @@ def submitFCMToken(db, user, token) :
     db.submitFCMToken(user, token)
 
 def getAuth(db, topic, user, code) :
+    '''
+    ' Teacher   auth = 0 (admin)
+    ' TAs       auth = 1
+    ' Students  auth = 2
+    '''
     keeper = db.getClassKeeper(code)
     if keeper != "" :
         topic_re = "%s/Re" % (topic)
         if keeper == user :
-            client.publish(topic_re, "1", 2, False)
-        else :
             client.publish(topic_re, "0", 2, False)
+        else :
+            client.publish(topic_re, "2", 2, False)
     else :
         print("error getting Auth")
 
