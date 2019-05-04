@@ -562,6 +562,14 @@ class DBHandler:
             intro = self.cursor.fetchone()[0]
             return intro
 
+    def getPhoneNum(self, user) :
+        self.re_connect()
+        sql = "SELECT PhoneNum FROM students WHERE StudentID = '%s'" % (user)
+        self.cursor.execute(sql)
+        if self.cursor.rowcount > 0 :
+            phoneNum = self.cursor.fetchone()[0]
+            return phoneNum
+
 ############################################################
 if __name__ == "__main__" :
     conn = DBHandler.connect()

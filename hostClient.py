@@ -199,6 +199,16 @@ def initialize(db, topic, user) :
 def getUserData(db, topic, user) :
     global client
     msg = db.getName(user)
+    user_phone = db.getPhoneNum(user)
+    msg += ("\r%s\t%s" % (user,user_phone))
+
+    f_list = db.getFriendList(user)
+    for i in range(0,len(f_list)) :
+        friend = f_list[i]
+        friend_phone = db.getPhoneNum(friend)
+        msg += (",%s\t%s" % (friend, friend_phone))
+    print(msg)
+
     topic_re = "%s/Re" % (topic)
     client.publish(topic_re,msg,2,False)
 
