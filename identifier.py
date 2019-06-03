@@ -25,6 +25,7 @@ ChangeUserName = "ChangeUserName"
 ChangeUserIntro = "ChangeUserIntro"
 ForwardTXT = "ForwardTXT"
 ForwardIMG = "ForwardIMG"
+PubAnnoc = "PubAnnoc"
 
 AddFriendNotification = "AddFriendNotification"
 

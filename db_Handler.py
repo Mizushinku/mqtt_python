@@ -540,7 +540,7 @@ class DBHandler:
             self.conn.rollback()
             return False
         else :
-            return True;
+            return True
 
     def changeUserIntro(self, user, newIntro) :
         self.re_connect()
@@ -569,6 +569,19 @@ class DBHandler:
         if self.cursor.rowcount > 0 :
             phoneNum = self.cursor.fetchone()[0]
             return phoneNum
+
+    def addAnnoc(self, announcer, code, text) :
+        self.re_connect()
+        result = False
+        try :
+            sql = "INSERT INTO annoc(announcer, code, text) VALUES('%s', '%s', '%s')" % (announcer, code, text)
+            self.cursor.execute(sql)
+            self.conn.commit()
+            result = True
+        except :
+            self.conn.rollback()
+        return result
+        
 
 ############################################################
 if __name__ == "__main__" :

@@ -156,7 +156,9 @@ def hall(topic, msg) :
             forwardTXT(db, topic, user, msg)
         elif identifier == idf.ForwardIMG :
             forwardIMG(db, topic, user, msg)
-
+        elif identifier == idf.PubAnnoc :
+            pubAnnoc(db, topic, user, msg)
+            
     elif category == "Service" :
         if   identifier == idf.AddFriendNotification :
             addFriendNotification(topic, user, msg)
@@ -527,6 +529,24 @@ def forwardIMG(db, topic, user, msg) :
         topic_revise = "IDF/SendImg/%s/%s" % (user, code)
         sendImg(db, topic_revise, user, msg)
 
+def pubAnnoc(db, topic, user, msg) :
+    global client
+    a_type = msg.split("\t")[0] # { 0 = assignment, 1 = exam, 2 = vote }
+    code = msg.split("\t")[1]
+    text = msg.split("\t")[2]
+    topic_re = "%s/Re" % (topic)
+    if db.addAnnoc(user, code, text) :
+        members = db.getReceiverList(code)
+        className = db.getRoomName(code)
+        for r in members :
+            if r != user :
+                token = db.findFCMToken(r)
+                if token != "e" :
+                    fcm.push_notify_annoc(token, className, text)
+            else :
+                client.publish(topic_re, "OK", 2, False)
+    else :
+        client.publish(topic_re, "Fail", 2, False)
 ###################################
 
 def addFriendNotification(topic, user, friendName) :
