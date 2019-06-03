@@ -158,6 +158,8 @@ def hall(topic, msg) :
             forwardIMG(db, topic, user, msg)
         elif identifier == idf.PubAnnoc :
             pubAnnoc(db, topic, user, msg)
+        elif identifier == idf.GetAnnoc :
+            getAnnoc(db, topic, user)
             
     elif category == "Service" :
         if   identifier == idf.AddFriendNotification :
@@ -547,6 +549,16 @@ def pubAnnoc(db, topic, user, msg) :
                 client.publish(topic_re, "OK", 2, False)
     else :
         client.publish(topic_re, "Fail", 2, False)
+
+def getAnnoc(db, topic, user) :
+    global client
+    annoc_list = db.getAnnoc(user)
+    if len(annoc_list) > 0:
+        annoc_str = "\t".join(annoc_list)
+        topic_re = "%s/Re" % (topic)
+        client.publish(topic_re, annoc_str, 2, False)
+    
+
 ###################################
 
 def addFriendNotification(topic, user, friendName) :

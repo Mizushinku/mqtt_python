@@ -581,6 +581,19 @@ class DBHandler:
         except :
             self.conn.rollback()
         return result
+
+    def getAnnoc(self, user) :
+        annoc_list = list(())
+        sql = "SELECT code FROM roommap WHERE member = '%s' AND Type = 'C'" % (user)
+        self.cursor.execute(sql)
+        code_list = self.cursor.fetchall()
+        if len(code_list) > 0:
+            for code in code_list[0] :
+                sql = "SELECT text FROM annoc WHERE code = '%s'" % (code)
+                self.cursor.execute(sql)
+                for i in range(0, self.cursor.rowcount) :
+                    annoc_list.append(self.cursor.fetchone()[0])
+        return annoc_list
         
 
 ############################################################
