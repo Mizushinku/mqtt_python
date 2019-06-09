@@ -573,7 +573,7 @@ def stop(*args) :
 
 def start_aps() :
     scheduler = BackgroundScheduler()
-    scheduler.add_job(aps_job, 'cron', second = '*/10')
+    scheduler.add_job(aps_job, 'cron', day = '*')
     scheduler.start()
 
 def aps_job() :
