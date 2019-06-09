@@ -7,18 +7,17 @@ import pymysql
 import ChatRoom, Record
 import identifier as idf
 import importlib
-import datetime
+from datetime import datetime, timedelta
 import fcm
 import os
 import io
 from PIL import Image
+from apscheduler.schedulers.background import BackgroundScheduler
 
 #importlib.reload(sys)
 #sys.setdefaultencoding('utf-8')
 
 client = None
-
-mqtt_loop = False
 
 
 ###################################
@@ -46,9 +45,7 @@ def mqtt_client_thread():
     #signal.signal(signal.SIGQUIT, stop)
     signal.signal(signal.SIGINT,  stop)  # Ctrl-C
 
-    heartBeat = 0
-
-    global mqtt_loop, client
+    global client
     client_id = "gardenia"
     client = mqtt.Client(client_id,False)
 
@@ -71,23 +68,9 @@ def mqtt_client_thread():
     topic = "Service/+/+"
     client.subscribe(topic)
 
-    mqtt_loop = True
-    cnt = 0
-    '''
-    while mqtt_loop:
-        client.loop()
-        cnt += 1
-        if cnt > 20:
-            heartBeat += 1
-            print ("HeartBeat = %d" % (heartBeat))
-            try:
-                client.reconnect()
-            except:
-                time.sleep(1)
-            cnt = 0
-    print("quit mqtt thread")
-    client.disconnect()
-    '''
+    # setup and start background scheduled job
+    start_aps()
+
     client.loop_forever()
 
 ###################################
@@ -297,7 +280,7 @@ def sendMessage(db, topic, user, msg) :
     sender = msg_splitLine[1]
     text = msg_splitLine[2]
     t = db.storeRecord(code,sender,text)
-    msg = msg + "\t" + datetime.datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
+    msg = msg + "\t" + datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
     receiver = db.getReceiverList(code)
     roomType = db.getRoomType(code)
     for R in receiver:
@@ -322,7 +305,7 @@ def sendImg(db, topic, user, imgBytes) :
     image.save(path)
 
     t = db.storeRecord(code, user, path, 'img')
-    t_str = datetime.datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
+    t_str = datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
     receiver = db.getReceiverList(code)
     roomType = db.getRoomType(code)
     for R in receiver:
@@ -423,7 +406,7 @@ def addPoster(db, topic, user, msg) :
     content = msg.split("\t")[2]
     type_t = msg.split("\t")[3]
     t = db.storePoster(code, user, theme, content, type_t)
-    msg = msg + "\t" + user + "\t" + datetime.datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
+    msg = msg + "\t" + user + "\t" + datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
     receiver = db.getReceiverList(code)
     for R in receiver :
         topic_re = "IDF/AddPoster/%s/Re" % (R)
@@ -583,9 +566,43 @@ def getImageByPath(path) :
 ###################################
 
 def stop(*args) :
-    global mqtt_loop
-    mqtt_loop = False
     client.disconnect()
+###################################
+
+# scheduled jobs related functions
+
+def start_aps() :
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(aps_job, 'cron', second = '*/10')
+    scheduler.start()
+
+def aps_job() :
+    conn = DBHandler.connect()
+    cursor = conn.cursor()
+    db = DBHandler(conn,cursor)
+
+    clear_image_in_folder(db)
+
+def clear_image_in_folder(db) :
+    rows = db.getImgMsgWithTime()
+    if len(rows) > 0 :
+        time_now = datetime.now()
+        for row in rows :
+            PK = row[0]
+            path = row[1]
+            img_time = row[2]
+            if time_now - img_time > timedelta(days = 30) :
+                try :
+                    os.remove(path)
+                except OSError as e :
+                    print(e)
+                else :
+                    print('\033[31mDelete\033[0m %s' % (path))
+                db.setClearedInRecord(PK)
+
+            
+    
+
 ###################################
 
 if __name__ == "__main__":

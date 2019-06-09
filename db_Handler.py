@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 #import MySQLdb
 import pymysql
-import sys, time, hashlib, datetime
+import sys, time, hashlib
+from datetime import datetime
 import ChatRoom, Record, Post
 import importlib
 import threading
@@ -334,7 +335,7 @@ class DBHandler:
         self.cursor.execute(sql)
         if self.cursor.rowcount > 0:
             row = self.cursor.fetchone()
-            date = datetime.datetime.strftime(row[0],'%Y-%m-%d %H:%M:%S')
+            date = datetime.strftime(row[0],'%Y-%m-%d %H:%M:%S')
             return date
         else :
             return "XXXX-XX-XX XX:XX"
@@ -594,6 +595,21 @@ class DBHandler:
                 for i in range(0, self.cursor.rowcount) :
                     annoc_list.append(self.cursor.fetchone()[0])
         return annoc_list
+
+    def getImgMsgWithTime(self) :
+        sql = "SELECT PK, MSG, time FROM record WHERE type = 'img' AND cleared = 'N'"
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
+
+    def setClearedInRecord(self, pk) :
+        try :
+            sql = "UPDATE record SET cleared = 'Y' WHERE PK = '%s'" % (pk)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except :
+            self.conn.rollback()
+
+
         
 
 ############################################################
