@@ -573,17 +573,18 @@ def stop(*args) :
 
 def start_aps() :
     scheduler = BackgroundScheduler()
-    scheduler.add_job(aps_job, 'cron', day = '*')
+    scheduler.add_job(clear_image_in_folder, 'cron', day = '*')
+    scheduler.add_job(check_annoc_due, 'cron', minute = '*')
     scheduler.start()
 
-def aps_job() :
+def getDB() :
     conn = DBHandler.connect()
     cursor = conn.cursor()
     db = DBHandler(conn,cursor)
+    return db
 
-    clear_image_in_folder(db)
-
-def clear_image_in_folder(db) :
+def clear_image_in_folder() :
+    db = getDB()
     rows = db.getImgMsgWithTime()
     if len(rows) > 0 :
         time_now = datetime.now()
@@ -600,6 +601,9 @@ def clear_image_in_folder(db) :
                     print('\033[31mDelete\033[0m %s' % (path))
                 db.setClearedInRecord(PK)
 
+def check_annoc_due() :
+    db = getDB()
+    db.check_annoc_due()
             
     
 

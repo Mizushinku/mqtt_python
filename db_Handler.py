@@ -573,9 +573,11 @@ class DBHandler:
 
     def addAnnoc(self, announcer, code, text) :
         self.re_connect()
+        time_str = text.split('\n')[3].split('Due : ')[1].replace(',', '')
+        due = time_str + ':59'
         result = False
         try :
-            sql = "INSERT INTO annoc(announcer, code, text) VALUES('%s', '%s', '%s')" % (announcer, code, text)
+            sql = "INSERT INTO annoc(announcer, code, text, due) VALUES('%s', '%s', '%s', '%s')" % (announcer, code, text, due)
             self.cursor.execute(sql)
             self.conn.commit()
             result = True
@@ -604,6 +606,17 @@ class DBHandler:
     def setClearedInRecord(self, pk) :
         try :
             sql = "UPDATE record SET cleared = 'Y' WHERE PK = '%s'" % (pk)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except :
+            self.conn.rollback()
+
+    def check_annoc_due(self) :
+        try :
+            time = datetime.now()
+            time_str = datetime.strftime(time, '%Y-%m-%d %H:%M:%S')
+            sql = "DELETE FROM annoc WHERE due < '%s'" % (time_str)
+            print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
         except :
