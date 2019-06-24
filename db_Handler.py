@@ -571,10 +571,8 @@ class DBHandler:
             phoneNum = self.cursor.fetchone()[0]
             return phoneNum
 
-    def addAnnoc(self, announcer, code, text) :
+    def addAnnoc(self, announcer, code, text, due) :
         self.re_connect()
-        time_str = text.split('\n')[3].split('Due : ')[1].replace(',', '')
-        due = time_str + ':59'
         result = False
         try :
             sql = "INSERT INTO annoc(announcer, code, text, due) VALUES('%s', '%s', '%s', '%s')" % (announcer, code, text, due)
@@ -616,7 +614,6 @@ class DBHandler:
             time = datetime.now()
             time_str = datetime.strftime(time, '%Y-%m-%d %H:%M:%S')
             sql = "DELETE FROM annoc WHERE due < '%s'" % (time_str)
-            print(sql)
             self.cursor.execute(sql)
             self.conn.commit()
         except :
