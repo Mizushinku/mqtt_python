@@ -135,6 +135,8 @@ def hall(topic, msg) :
             changeUserName(db, topic, user, msg)
         elif identifier == idf.ChangeUserIntro :
             changeUserIntro(db, topic, user, msg)
+        elif identifier == idf.ChangeUserPassword :
+            changeUserPassword(db, topic, user, msg)
         elif identifier == idf.ForwardTXT :
             forwardTXT(db, topic, user, msg)
         elif identifier == idf.ForwardIMG :
@@ -491,6 +493,17 @@ def changeUserIntro(db, topic, user, newIntro) :
     else :
         client.publish(topic_re, "Error", 2, False)
 
+def changeUserPassword(db, topic, user, newPassword) :
+    global client
+
+    result = db.changeUserPassword(user, newPassword)
+    topic_re = "%s/Re" % (topic)
+    if result == True :
+        msg = "OK\t%s" % (newPassword)
+        client.publish(topic_re, msg, 2, False)
+    else :
+        client.publish(topic_re, "Error", 2, False)
+    
 
 def deleteMessage(db, topic, user, msg) :
     code = msg.split("\t")[0]

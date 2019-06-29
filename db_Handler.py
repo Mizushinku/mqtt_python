@@ -555,6 +555,18 @@ class DBHandler:
         else :
             return True
 
+    def changeUserPassword(self, user, newPassword) :
+        self.re_connect()
+        try :
+            sql = "UPDATE students SET password = '%s' WHERE StudentID = '%s'" % (newPassword, user)
+            self.cursor.execute(sql)
+            self.conn.commit()
+        except :
+            self.conn.rollback()
+            return False
+        else :
+            return True
+
     def getUserIntro(self, user) :
         self.re_connect()
         sql = "SELECT intro FROM students WHERE StudentID = '%s'" % (user)
