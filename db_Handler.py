@@ -82,7 +82,7 @@ class DBHandler:
         sql = "SELECT null FROM students WHERE StudentID = '%s' AND password = '%s'" % (userID, password)
         self.cursor.execute(sql)
         if self.cursor.rowcount == 1:
-            print("OHYA")
+            #print("OHYA")
             result = True
 
         return result
