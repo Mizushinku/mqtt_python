@@ -165,7 +165,7 @@ def login(db, topic, user, msg) :
 def loginWithPassword(db, topic, user, password) :
     global client
     result = db.Password(password)
-        if result == True :
+    if result == True :
         msg = "True," + msg
     else :
         msg = "False"
