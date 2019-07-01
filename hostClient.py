@@ -114,7 +114,7 @@ def hall(topic, msg) :
         elif identifier == idf.Login :
             login(db, topic, user, msg)
         elif identifier == idf.LoginWithPassword :
-            loginWithPassword(db, topic, user, password) 
+            loginWithPassword(db, topic, msg)
         elif identifier == idf.InviteFriend :
             inviteFriend(db, topic, msg)
         elif identifier == idf.SubmitFCMToken :
@@ -162,9 +162,11 @@ def login(db, topic, user, msg) :
     topic_re = "%s/Re" % (topic)
     client.publish(topic_re,msg,2,False)
 
-def loginWithPassword(db, topic, user, password) :
+def loginWithPassword(db, topic, msg) :
     global client
-    result = db.Password(password)
+    userID = msg.split("\t")[0]
+    password = msg.split("\t")[1]
+    result = db.userVerify(userID, password)
     if result == True :
         msg = "True," + msg
     else :

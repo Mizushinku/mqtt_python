@@ -74,14 +74,15 @@ class DBHandler:
 
         return result
 
-    def Password(self, password) :
+    def userVerify(self, userID, password) :
         self.re_connect()
         # global cursor
         result = False
 
-        sql = "SELECT password FROM students WHERE password = '%s'" % (password)
+        sql = "SELECT null FROM students WHERE StudentID = '%s' AND password = '%s'" % (userID, password)
         self.cursor.execute(sql)
         if self.cursor.rowcount == 1:
+            print("OHYA")
             result = True
 
         return result
@@ -644,7 +645,7 @@ class DBHandler:
             self.conn.rollback()
 
 
-        
+
 
 ############################################################
 if __name__ == "__main__" :
