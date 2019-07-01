@@ -113,6 +113,8 @@ def hall(topic, msg) :
             RecordImgBack(db, topic, user, msg)
         elif identifier == idf.Login :
             login(db, topic, user, msg)
+        elif identifier == idf.LoginWithPassword :
+            loginWithPassword(db, topic, user, password) 
         elif identifier == idf.InviteFriend :
             inviteFriend(db, topic, msg)
         elif identifier == idf.SubmitFCMToken :
@@ -154,6 +156,16 @@ def login(db, topic, user, msg) :
     global client
     result = db.login(msg)
     if result == True :
+        msg = "True," + msg
+    else :
+        msg = "False"
+    topic_re = "%s/Re" % (topic)
+    client.publish(topic_re,msg,2,False)
+
+def loginWithPassword(db, topic, user, password) :
+    global client
+    result = db.Password(password)
+        if result == True :
         msg = "True," + msg
     else :
         msg = "False"

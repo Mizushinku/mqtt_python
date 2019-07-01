@@ -74,6 +74,18 @@ class DBHandler:
 
         return result
 
+    def Password(self, password) :
+        self.re_connect()
+        # global cursor
+        result = False
+
+        sql = "SELECT password FROM students WHERE password = '%s'" % (password)
+        self.cursor.execute(sql)
+        if self.cursor.rowcount == 1:
+            result = True
+
+        return result
+
     def isFriend(self, user, friend) :
         self.re_connect()
         # global cursor
