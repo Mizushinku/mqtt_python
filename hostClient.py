@@ -196,7 +196,7 @@ def getUserData(db, topic, user) :
         friend = f_list[i]
         friend_phone = db.getPhoneNum(friend)
         msg += (",%s\t%s" % (friend, friend_phone))
-    print(msg)
+    #print(msg)
 
     topic_re = "%s/Re" % (topic)
     client.publish(topic_re,msg,2,False)
