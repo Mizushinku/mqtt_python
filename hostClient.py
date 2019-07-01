@@ -168,7 +168,7 @@ def loginWithPassword(db, topic, msg) :
     password = msg.split("\t")[1]
     result = db.userVerify(userID, password)
     if result == True :
-        msg = "True," + msg
+        msg = "True," + userID
     else :
         msg = "False"
     topic_re = "%s/Re" % (topic)
