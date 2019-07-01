@@ -145,7 +145,7 @@ def hall(topic, msg) :
             pubAnnoc(db, topic, user, msg)
         elif identifier == idf.GetAnnoc :
             getAnnoc(db, topic, user)
-            
+
     elif category == "Service" :
         if   identifier == idf.AddFriendNotification :
             addFriendNotification(topic, user, msg)
@@ -215,12 +215,14 @@ def addFriend(db, topic, user, friend) :
     if result == True :
         last = db.getLast(user,"F") #code
         name = db.getName(friend)
-        msg = "true/%s/%s/%s/1" % (name,friend,last)
+        friend_phone = db.getPhoneNum(friend)
+        msg = "true/%s/%s/%s/%s/1" % (name,friend,last,friend_phone)
         client.publish(topic_re,msg,2,False)
 
         topic_re = topic_re.replace(user,friend)
         name = db.getName(user)
-        msg = "true/%s/%s/%s/2" % (name,user,last)
+        user_phone = db.getPhoneNum(user)
+        msg = "true/%s/%s/%s/%s/2" % (name,user,last,user_phone)
         client.publish(topic_re,msg,2,False)
     else :
         client.publish(topic_re,"false")
@@ -503,7 +505,7 @@ def changeUserPassword(db, topic, user, newPassword) :
         client.publish(topic_re, msg, 2, False)
     else :
         client.publish(topic_re, "Error", 2, False)
-    
+
 
 def deleteMessage(db, topic, user, msg) :
     code = msg.split("\t")[0]
@@ -554,7 +556,7 @@ def getAnnoc(db, topic, user) :
         annoc_str = "\t".join(annoc_list)
         topic_re = "%s/Re" % (topic)
         client.publish(topic_re, annoc_str, 2, False)
-    
+
 
 ###################################
 
@@ -618,8 +620,8 @@ def clear_image_in_folder() :
 def check_annoc_due() :
     db = getDB()
     db.check_annoc_due()
-            
-    
+
+
 
 ###################################
 
