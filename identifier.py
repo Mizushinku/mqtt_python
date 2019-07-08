@@ -29,6 +29,7 @@ ForwardTXT = "ForwardTXT"
 ForwardIMG = "ForwardIMG"
 PubAnnoc = "PubAnnoc"
 GetAnnoc = "GetAnnoc"
+Voting = "Voting"
 
 AddFriendNotification = "AddFriendNotification"
 

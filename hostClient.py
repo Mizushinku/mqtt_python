@@ -147,6 +147,8 @@ def hall(topic, msg) :
             pubAnnoc(db, topic, user, msg)
         elif identifier == idf.GetAnnoc :
             getAnnoc(db, topic, user)
+        elif identifier == idf.Voting :
+            voting(db, topic, user, msg)
 
     elif category == "Service" :
         if   identifier == idf.AddFriendNotification :
@@ -570,6 +572,17 @@ def getAnnoc(db, topic, user) :
         annoc_str = "\t".join(annoc_list)
         topic_re = "%s/Re" % (topic)
         client.publish(topic_re, annoc_str, 2, False)
+
+def voting(db, topic, user, msg) :
+    global client
+    pk = msg.split('\t')[0]
+    selected = msg.split('\t')[1]
+    res = db.add_vote_result(pk, user, selected)
+    topic_re = "%s/Re" % (topic)
+    if res == True :
+        client.publish(topic_re, "OK", 2, False)
+    else :
+        client.publish(topic_re, "Fail", 2, False)
 
 
 ###################################

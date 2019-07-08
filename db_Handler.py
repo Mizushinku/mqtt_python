@@ -615,10 +615,12 @@ class DBHandler:
         code_list = self.cursor.fetchall()
         if len(code_list) > 0:
             for code in code_list[0] :
-                sql = "SELECT text FROM annoc WHERE code = '%s'" % (code)
+                sql = "SELECT PK, text FROM annoc WHERE code = '%s'" % (code)
                 self.cursor.execute(sql)
                 for i in range(0, self.cursor.rowcount) :
-                    annoc_list.append(self.cursor.fetchone()[0])
+                    row = self.cursor.fetchone()
+                    pk_text = "\n".join([str(row[0]), row[1]])
+                    annoc_list.append(pk_text)
         return annoc_list
 
     def getImgMsgWithTime(self) :
@@ -643,6 +645,22 @@ class DBHandler:
             self.conn.commit()
         except :
             self.conn.rollback()
+
+    def add_vote_result(self, pk, user, selected) :
+        sql = "SELECT null FROM vote_result WHERE PK = '%s' AND id = '%s'" % (pk, user)
+        self.cursor.execute(sql)
+        if self.cursor.rowcount == 0 :
+            try :
+                sql = "INSERT INTO vote_result(pk, id, result) VALUES('%s', '%s', '%s')" % (pk, user, selected)
+                self.cursor.execute(sql)
+                self.conn.commit()
+            except :
+                self.conn.rollback()
+                return False
+            else :
+                return True
+        else :
+            return False
 
 
 
