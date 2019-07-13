@@ -580,9 +580,9 @@ def voting(db, topic, user, msg) :
     res = db.add_vote_result(pk, user, selected)
     topic_re = "%s/Re" % (topic)
     if res == True :
-        client.publish(topic_re, "OK", 2, False)
+        client.publish(topic_re, pk + ";OK", 2, False)
     else :
-        client.publish(topic_re, "Fail", 2, False)
+        client.publish(topic_re, pk + ";Fail", 2, False)
 
 
 ###################################

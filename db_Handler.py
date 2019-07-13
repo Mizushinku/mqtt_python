@@ -647,11 +647,11 @@ class DBHandler:
             self.conn.rollback()
 
     def add_vote_result(self, pk, user, selected) :
-        sql = "SELECT null FROM vote_result WHERE PK = '%s' AND id = '%s'" % (pk, user)
+        sql = "SELECT null FROM vote_result WHERE annoc_pk = '%s' AND id = '%s'" % (pk, user)
         self.cursor.execute(sql)
         if self.cursor.rowcount == 0 :
             try :
-                sql = "INSERT INTO vote_result(pk, id, result) VALUES('%s', '%s', '%s')" % (pk, user, selected)
+                sql = "INSERT INTO vote_result(annoc_pk, id, result) VALUES('%s', '%s', '%s')" % (pk, user, selected)
                 self.cursor.execute(sql)
                 self.conn.commit()
             except :
