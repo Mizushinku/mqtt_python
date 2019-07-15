@@ -551,8 +551,12 @@ def pubAnnoc(db, topic, user, msg) :
     code = msg.split("\t")[1]
     text = msg.split("\t")[2]
     due = msg.split("\t")[3]
+    vote_type = msg.split("\t")[4]
+    vote_item = None
+    if vote_type and vote_type == 'MC' :
+        vote_item = msg.split('\t')[5]
     topic_re = "%s/Re" % (topic)
-    if db.addAnnoc(user, code, text, due) :
+    if db.addAnnoc(user, code, text, due, a_type, vote_type, vote_item) :
         members = db.getReceiverList(code)
         className = db.getRoomName(code)
         for r in members :

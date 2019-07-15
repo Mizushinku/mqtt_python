@@ -596,16 +596,30 @@ class DBHandler:
             phoneNum = self.cursor.fetchone()[0]
             return phoneNum
 
-    def addAnnoc(self, announcer, code, text, due) :
+    def addAnnoc(self, announcer, code, text, due, a_type, vote_type, vote_item) :
         self.re_connect()
         result = False
+        if a_type == '2' :
+            if not vote_type :
+                return False
+            elif vote_type == 'MC' :
+                if not vote_item :
+                    return False
         try :
             sql = "INSERT INTO annoc(announcer, code, text, due) VALUES('%s', '%s', '%s', '%s')" % (announcer, code, text, due)
             self.cursor.execute(sql)
             self.conn.commit()
+            last_id = self.cursor.lastrowid
+            if a_type == '2' :
+                if vote_type == 'AD' :
+                    vote_item = "AD"
+                sql = "INSERT INTO vote_item(annoc_pk, items) VALUES('%s', '%s')" % (last_id, vote_item)
+                self.cursor.execute(sql)
+                self.conn.commit()
             result = True
         except :
             self.conn.rollback()
+
         return result
 
     def getAnnoc(self, user) :
@@ -621,6 +635,12 @@ class DBHandler:
                     row = self.cursor.fetchone()
                     pk_text = "\n".join([str(row[0]), row[1]])
                     annoc_list.append(pk_text)
+                for i in range(0, len(annoc_list)) :
+                    annoc_pk = annoc_list[i].split('\n')[0]
+                    sql = "SELECT items FROM vote_item WHERE annoc_pk = '%s' AND items != 'AD'" % (annoc_pk)
+                    self.cursor.execute(sql)
+                    if self.cursor.rowcount > 0 :
+                        annoc_list[i] = annoc_list[i] + ":::" + self.cursor.fetchone()[0]
         return annoc_list
 
     def getImgMsgWithTime(self) :
