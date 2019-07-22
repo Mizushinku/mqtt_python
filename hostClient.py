@@ -337,9 +337,15 @@ def sendImg(db, topic, user, imgBytes) :
                 name = db.getName(user)
                 fcm.push_notify_to_one(token,name,"a new image",code,R,roomType)
 
-def getRecord(db, topic, user, code) :
+def getRecord(db, topic, user, msg) :
     global client
-    L = db.getRecord(code)
+    code = msg.split('\t')[0]
+    record_cnt = int(msg.split('\t')[1])
+    L = db.getRecord(code, record_cnt)
+    if not L :
+        print("\033[35mEmpty Record!\033[0m")
+        return
+
     topic_re = "%s/Re" % (topic)
     msg = ""
     for i in range(0,len(L)) :

@@ -314,12 +314,34 @@ class DBHandler:
             self.conn.rollback()
 
 
-    def getRecord(self, code) :
+    def getRecord(self, code, record_cnt) :
         self.re_connect()
         # global cursor
-        self.arrangeRecord(code)
+        # self.arrangeRecord(code)
+        sql = "SELECT null FROM Record WHERE code = '%s'" % (code)
+        self.cursor.execute(sql)
+        count = self.cursor.rowcount
+        cap = 12
+        offset = cap * (record_cnt - 1)
+        if offset + cap > count :
+            if offset + 1 > count :
+                return None
+            else :
+                cap = count - offset
+
+        '''
+        cap = 12
+        offset = count - cap * record_cnt
+        if offset < 0 :
+            if offset * -1 > cap :
+                return None
+            else :
+                cap = cap + offset
+                offset = 0
+        '''
+
         record = list(())
-        sql = "SELECT sender, MSG, time, type FROM Record WHERE code = '%s'" % (code)
+        sql = "SELECT sender, MSG, time, type FROM Record WHERE code = '%s' ORDER BY time DESC LIMIT %d,%d " % (code, offset, cap)
         self.cursor.execute(sql)
 
         for i in range(0,self.cursor.rowcount) :
