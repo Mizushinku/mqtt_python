@@ -341,20 +341,20 @@ def getRecord(db, topic, user, msg) :
     global client
     code = msg.split('\t')[0]
     record_cnt = int(msg.split('\t')[1])
-    L = db.getRecord(code, record_cnt)
+    last_pk = int(msg.split('\t')[2])
+    if last_pk == 0 :
+        last_pk = db.getLastMsgPk(code)
+
+    L = db.getRecord(code, record_cnt, last_pk)
     if not L :
-        print("\033[35mEmpty Record!\033[0m")
+        #print("\033[35mEmpty Record!\033[0m")
         return
 
     topic_re = "%s/Re" % (topic)
-    msg = ""
+    msg = str(last_pk)
     for i in range(0,len(L)) :
         R = L[i]
-        if i == 0:
-            msg += "%s\t%s\t%s\t%s" % (R.sender, R.MSG, R.time, R.type)
-        else :
-            msg += "\r%s\t%s\t%s\t%s" % (R.sender, R.MSG, R.time, R.type)
-        i = i + 1
+        msg += "\r%s\t%s\t%s\t%s" % (R.sender, R.MSG, R.time, R.type)
     client.publish(topic_re,msg,2,False)
 
 def RecordImgBack(db, topic, user, path) :

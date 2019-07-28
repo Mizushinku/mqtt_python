@@ -314,11 +314,11 @@ class DBHandler:
             self.conn.rollback()
 
 
-    def getRecord(self, code, record_cnt) :
+    def getRecord(self, code, record_cnt, last_pk) :
         self.re_connect()
         # global cursor
         # self.arrangeRecord(code)
-        sql = "SELECT null FROM Record WHERE code = '%s'" % (code)
+        sql = "SELECT null FROM Record WHERE code = '%s' AND PK <= %d" % (code, last_pk)
         self.cursor.execute(sql)
         count = self.cursor.rowcount
         cap = 12
@@ -341,7 +341,7 @@ class DBHandler:
         '''
 
         record = list(())
-        sql = "SELECT sender, MSG, time, type FROM Record WHERE code = '%s' ORDER BY time DESC LIMIT %d,%d " % (code, offset, cap)
+        sql = "SELECT sender, MSG, time, type FROM Record WHERE code = '%s' AND PK <= %d ORDER BY PK DESC LIMIT %d,%d " % (code, last_pk, offset, cap)
         self.cursor.execute(sql)
 
         for i in range(0,self.cursor.rowcount) :
@@ -374,6 +374,16 @@ class DBHandler:
             return date
         else :
             return "XXXX-XX-XX XX:XX"
+
+    def getLastMsgPk(self, code) :
+        self.re_connect()
+        sql = "SELECT PK FROM record WHERE code = '%s' ORDER BY PK DESC LIMIT 1" % (code)
+        self.cursor.execute(sql)
+        if self.cursor.rowcount > 0 :
+            last_pk = self.cursor.fetchone()[0]
+            return last_pk
+        else :
+            return 0
 
 
     def getLast(self, user, Type) :
