@@ -55,8 +55,9 @@ class DBHandler:
         # global cursor
         result = False
 
-        sql = "SELECT studentID FROM students WHERE studentID = '%s'" % (account)
-        self.cursor.execute(sql)
+        sql = "SELECT studentID FROM students WHERE studentID = %s"
+        args = (account)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount == 1:
             result = True
 
@@ -67,8 +68,9 @@ class DBHandler:
         # global cursor
         result = False
 
-        sql = "SELECT studentID FROM students WHERE studentID = '%s'" % (account)
-        self.cursor.execute(sql)
+        sql = "SELECT studentID FROM students WHERE studentID = %s"
+        args = (account)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount == 1:
             result = True
 
@@ -79,8 +81,9 @@ class DBHandler:
         # global cursor
         result = False
 
-        sql = "SELECT null FROM students WHERE StudentID = '%s' AND password = '%s'" % (userID, password)
-        self.cursor.execute(sql)
+        sql = "SELECT null FROM students WHERE StudentID = %s AND password = %s"
+        args = (userID, password)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount == 1:
             #print("OHYA")
             result = True
@@ -92,8 +95,9 @@ class DBHandler:
         # global cursor
         result = False
         if(self.confirmAccount(user) and self.confirmAccount(friend)) :
-            sql = "SELECT null FROM friendMap WHERE user = '%s' AND friend = '%s'" % (user, friend)
-            self.cursor.execute(sql)
+            sql = "SELECT null FROM friendMap WHERE user = %s AND friend = %s"
+            args = (user, friend)
+            self.cursor.execute(sql, args)
             if self.cursor.rowcount > 0:
                 result = True
 
@@ -102,8 +106,9 @@ class DBHandler:
     def hasRoom(self, user, code) :
         self.re_connect()
         result = False
-        sql = "SELECT null FROM roommap WHERE member = '%s' AND code = '%s'" % (user, code)
-        self.cursor.execute(sql)
+        sql = "SELECT null FROM roommap WHERE member = %s AND code = %s"
+        args = (user, code)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount > 0 :
             result = True
         return result
@@ -114,11 +119,13 @@ class DBHandler:
         result = False
         if(self.confirmAccount(user) and self.confirmAccount(friend) and not(self.isFriend(user,friend)) and user != friend) :
             try :
-                sql = "INSERT INTO friendMap(user, friend) VALUES('%s', '%s')" % (user, friend)
-                self.cursor.execute(sql)
+                sql = "INSERT INTO friendMap(user, friend) VALUES(%s, %s)"
+                args = (user, friend)
+                self.cursor.execute(sql, args)
                 self.conn.commit()
-                sql = "INSERT INTO friendMap(user, friend) VALUES('%s', '%s')" % (friend, user)
-                self.cursor.execute(sql)
+                sql = "INSERT INTO friendMap(user, friend) VALUES(%s, %s)"
+                args = (friend, user)
+                self.cursor.execute(sql, args)
                 self.conn.commit()
                 L = list((user, friend))
                 if self.createChatRoom(L) :
@@ -221,8 +228,9 @@ class DBHandler:
             memberID = self.getRoomMember(code)
             intro = self.getUserIntro(friend)
             initInfo.append(ChatRoom.ChatRoom(code, name, memberID, "F", intro))
-        sql = "SELECT code, GroupName, Type FROM RoomMap WHERE GroupName IS NOT NULL AND member = '%s'" % (user)
-        self.cursor.execute(sql)
+        sql = "SELECT code, GroupName, Type FROM RoomMap WHERE GroupName IS NOT NULL AND member = %s"
+        args = (user)
+        self.cursor.execute(sql, args)
         for i in range(0,self.cursor.rowcount) :
             row = self.cursor.fetchone()
             initInfo.append(ChatRoom.ChatRoom(row[0], row[1], "", row[2], ""))
