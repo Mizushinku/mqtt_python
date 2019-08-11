@@ -140,17 +140,21 @@ class DBHandler:
         # global cursor, conn
         result = False
         try :
-            sql = "DELETE FROM friendMap WHERE user = '%s' AND friend = '%s'" % (user, friend)
-            self.cursor.execute(sql)
+            sql = "DELETE FROM friendMap WHERE user = %s AND friend = %s"
+            args = (user, friend)
+            self.cursor.execute(sql, args)
             self.conn.commit()
-            sql = "DELETE FROM friendMap WHERE user = '%s' AND friend = '%s'" % (friend, user)
-            self.cursor.execute(sql)
+            sql = "DELETE FROM friendMap WHERE user = %s AND friend = %s"
+            args = (friend, user)
+            self.cursor.execute(sql, args)
             self.conn.commit()
-            sql = "DELETE FROM record WHERE code = '%s'" % (code)
-            self.cursor.execute(sql)
+            sql = "DELETE FROM record WHERE code = %s"
+            args = (code)
+            self.cursor.execute(sql, args)
             self.conn.commit()
-            sql = "DELETE FROM roomMap WHERE code = '%s'" % (code)
-            self.cursor.execute(sql)
+            sql = "DELETE FROM roomMap WHERE code = %s"
+            args = (code)
+            self.cursor.execute(sql, args)
             self.conn.commit()
             result = True
         except :
@@ -163,8 +167,9 @@ class DBHandler:
         # global cursor, conn
         friendList = list(())
         try :
-            sql = "SELECT friend FROM friendMap WHERE user = '%s'" % (user)
-            self.cursor.execute(sql)
+            sql = "SELECT friend FROM friendMap WHERE user = %s"
+            args = (user)
+            self.cursor.execute(sql, args)
             for i in range(0,self.cursor.rowcount) :
                 row = self.cursor.fetchone()
                 friendList.append(row[0])
@@ -178,8 +183,9 @@ class DBHandler:
         # global cursor, conn
         result = False
         try :
-            sql = "DELETE FROM roomMap WHERE code = '%s' AND member = '%s'" % (code, user)
-            self.cursor.execute(sql)
+            sql = "DELETE FROM roomMap WHERE code = %s AND member = %s"
+            args = (code, user)
+            self.cursor.execute(sql, args)
             self.conn.commit()
             result = True
         except :
@@ -241,8 +247,9 @@ class DBHandler:
 
     def getRoomName(self,code) :
         self.re_connect()
-        sql = "SELECT GroupName FROM roommap WHERE code = '%s'" % (code)
-        self.cursor.execute(sql)
+        sql = "SELECT GroupName FROM roommap WHERE code = %s"
+        args = (code)
+        self.cursor.execute(sql, args)
         row = self.cursor.fetchone()
         return row[0]
 
@@ -250,8 +257,9 @@ class DBHandler:
         self.re_connect()
         # global cursor
         member = ""
-        sql = "SELECT member FROM roommap WHERE code = '%s'" % (code)
-        self.cursor.execute(sql)
+        sql = "SELECT member FROM roommap WHERE code = %s"
+        args = (code)
+        self.cursor.execute(sql, args)
         for i in range(0,self.cursor.rowcount) :
             row = self.cursor.fetchone()
             if i == 0:
@@ -262,8 +270,9 @@ class DBHandler:
 
     def getRoomType(self, code):
         roomType = ""
-        sql = "SELECT Type FROM roommap WHERE code = '%s' LIMIT 1" % (code)
-        self.cursor.execute(sql)
+        sql = "SELECT Type FROM roommap WHERE code = %s LIMIT 1"
+        args = (code)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount > 0:
             roomType = self.cursor.fetchone()[0]
         return roomType
@@ -274,8 +283,9 @@ class DBHandler:
         # global cursor
         receiverList = list(())
 
-        sql = "SELECT member FROM RoomMap WHERE code = '%s'" % (code)
-        self.cursor.execute(sql)
+        sql = "SELECT member FROM RoomMap WHERE code = %s"
+        args = (code)
+        self.cursor.execute(sql, args)
         for i in range (0,self.cursor.rowcount) :
             row = self.cursor.fetchone()
             receiverList.append(row[0])
@@ -285,8 +295,9 @@ class DBHandler:
     def inviteNewFriend(self, code, roomName, memberID) :
         self.re_connect()
         try :
-            sql = "INSERT INTO roommap(code,GroupName,member,Type) VALUES('%s','%s','%s','G')" % (code, roomName, memberID)
-            self.cursor.execute(sql)
+            sql = "INSERT INTO roommap(code,GroupName,member,Type) VALUES(%s,%s,%s,'G')"
+            args = (code, roomName, memberID)
+            self.cursor.execute(sql, args)
             self.conn.commit()
         except:
             self.conn.rollback()
@@ -295,13 +306,15 @@ class DBHandler:
         self.re_connect()
         # global cursor, conn
         try :
-            sql = "INSERT INTO Record(code,sender,MSG,type) VALUES('%s','%s','%s','%s')" % (code, sender, MSG, type_t)
-            self.cursor.execute(sql)
+            sql = "INSERT INTO Record(code,sender,MSG,type) VALUES(%s,%s,%s,%s)"
+            args = (code, sender, MSG, type_t)
+            self.cursor.execute(sql, args)
             self.conn.commit()
         except :
             self.conn.rollback()
-        sql = "SELECT time FROM Record WHERE code = '%s' AND sender = '%s' AND MSG = '%s' ORDER BY time DESC LIMIT 1" % (code, sender, MSG)
-        self.cursor.execute(sql)
+        sql = "SELECT time FROM Record WHERE code = %s AND sender = %s AND MSG = %s ORDER BY time DESC LIMIT 1"
+        args = (code, sender, MSG)
+        self.cursor.execute(sql, args)
         row = self.cursor.fetchone()
         return row[0]
 
@@ -310,12 +323,14 @@ class DBHandler:
         self.re_connect()
         # global cursor, conn
         try :
-            sql = "SELECT null FROM Record WHERE code = '%s'" % (code)
-            self.cursor.execute(sql)
+            sql = "SELECT null FROM Record WHERE code = %s"
+            args = (code)
+            self.cursor.execute(sql, args)
             keep = 50
             if self.cursor.rowcount > keep :
-                sql = "DELETE FROM Record WHERE code = '%s' ORDER BY time ASC LIMIT %d" % (code, self.cursor.rowcount - keep)
-                self.cursor.execute(sql)
+                sql = "DELETE FROM Record WHERE code = %s ORDER BY time ASC LIMIT %d"
+                args = (code, self.cursor.rowcount - keep)
+                self.cursor.execute(sql, args)
                 self.conn.commit()
 
         except :
@@ -324,10 +339,13 @@ class DBHandler:
 
     def getRecord(self, code, record_cnt, last_pk) :
         self.re_connect()
-        # global cursor
-        # self.arrangeRecord(code)
-        sql = "SELECT null FROM Record WHERE code = '%s' AND PK <= %d" % (code, last_pk)
-        self.cursor.execute(sql)
+
+        # in pymysql, convert all args to str type
+        # so %d should replace with %s
+        # or will cause TypeError: %d format: a number is required, not str
+        sql = "SELECT null FROM Record WHERE code = %s AND PK <= %s"
+        args = (code, last_pk)
+        self.cursor.execute(sql, args)
         count = self.cursor.rowcount
         cap = 12
         offset = cap * (record_cnt - 1)
@@ -349,8 +367,9 @@ class DBHandler:
         '''
 
         record = list(())
-        sql = "SELECT sender, MSG, time, type FROM Record WHERE code = '%s' AND PK <= %d ORDER BY PK DESC LIMIT %d,%d " % (code, last_pk, offset, cap)
-        self.cursor.execute(sql)
+        sql = "SELECT sender, MSG, time, type FROM Record WHERE code = %s AND PK <= %s ORDER BY PK DESC LIMIT %s,%s"
+        args = (code, last_pk, offset, cap)
+        self.cursor.execute(sql, args)
 
         for i in range(0,self.cursor.rowcount) :
             row = self.cursor.fetchone()
