@@ -380,8 +380,9 @@ class DBHandler:
     def getLastMSG(self, code) :
         self.re_connect()
         # global cursor
-        sql = "SELECT MSG, type FROM record WHERE code = '%s' ORDER BY time DESC LIMIT 1" % (code)
-        self.cursor.execute(sql)
+        sql = "SELECT MSG, type FROM record WHERE code = %s ORDER BY time DESC LIMIT 1"
+        args = (code)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount > 0 :
             row = self.cursor.fetchone()
             if row[1] == 'text' :
@@ -393,8 +394,9 @@ class DBHandler:
     def getLastMSGTime(self, code) :
         self.re_connect()
         # global cursor
-        sql = "SELECT time FROM record WHERE code = '%s' ORDER BY time DESC LIMIT 1" % (code)
-        self.cursor.execute(sql)
+        sql = "SELECT time FROM record WHERE code = %s ORDER BY time DESC LIMIT 1"
+        args = (code)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount > 0:
             row = self.cursor.fetchone()
             date = datetime.strftime(row[0],'%Y-%m-%d %H:%M:%S')
@@ -404,8 +406,9 @@ class DBHandler:
 
     def getLastMsgPk(self, code) :
         self.re_connect()
-        sql = "SELECT PK FROM record WHERE code = '%s' ORDER BY PK DESC LIMIT 1" % (code)
-        self.cursor.execute(sql)
+        sql = "SELECT PK FROM record WHERE code = %s ORDER BY PK DESC LIMIT 1"
+        args = (code)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount > 0 :
             last_pk = self.cursor.fetchone()[0]
             return last_pk
@@ -417,35 +420,40 @@ class DBHandler:
         self.re_connect()
         # global cursor
         if Type == "F" :
-            sql = "SELECT code FROM RoomMap WHERE member = '%s' AND Type = '%s' ORDER BY time DESC LIMIT 1" % (user,Type)
-            self.cursor.execute(sql)
+            sql = "SELECT code FROM RoomMap WHERE member = %s AND Type = %s ORDER BY time DESC LIMIT 1"
+            args = (user, Type)
+            self.cursor.execute(sql, args)
             row = self.cursor.fetchone()
             return row[0]
         elif Type == "G" :
-            sql = "SELECT code, GroupName FROM RoomMap WHERE member = '%s' AND Type = '%s' ORDER BY time DESC LIMIT 1" % (user,Type)
-            self.cursor.execute(sql)
+            sql = "SELECT code, GroupName FROM RoomMap WHERE member = %s AND Type = %s ORDER BY time DESC LIMIT 1"
+            args = (user, Type)
+            self.cursor.execute(sql, args)
             row = self.cursor.fetchone()
             return "%s/%s" % (row[0],row[1])
 
     def getImage(self, user) :
         self.re_connect()
         # global cursor
-        sql = "SELECT Photo FROM students WHERE StudentID = '%s'" % (user)
-        self.cursor.execute(sql)
+        sql = "SELECT Photo FROM students WHERE StudentID = %s"
+        args = (user)
+        self.cursor.execute(sql, args)
         row = self.cursor.fetchone()
         return row[0]
 
     def getUserImagePath(self, user) :
         self.re_connect()
-        sql = "SELECT image_path FROM students WHERE StudentID = '%s'" % (user)
-        self.cursor.execute(sql)
+        sql = "SELECT image_path FROM students WHERE StudentID = %s"
+        args = (user)
+        self.cursor.execute(sql, args)
         row = self.cursor.fetchone()
         return row[0]
 
     def getName(self, user) :
         # global cursor
-        sql = "SELECT Name FROM students WHERE StudentID = '%s'" % (user)
-        self.cursor.execute(sql)
+        sql = "SELECT Name FROM students WHERE StudentID = %s"
+        args = (user)
+        self.cursor.execute(sql, args)
         name = self.cursor.fetchone()
         return name[0]
 
@@ -459,8 +467,9 @@ class DBHandler:
         self.re_connect()
         # global cursor
         result = False
-        sql = "SELECT DISTINCT null FROM RoomMap WHERE code = '%s'" % (code)
-        self.cursor.execute(sql)
+        sql = "SELECT DISTINCT null FROM RoomMap WHERE code = %s"
+        args = (code)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount > 0 :
             result = True
 
@@ -471,8 +480,9 @@ class DBHandler:
 
     def submitFCMToken(self, user, token) :
         try :
-            sql = "INSERT INTO FCMToken(user, token) VALUES('%s', '%s') ON DUPLICATE KEY UPDATE token = '%s'" % (user, token, token)
-            self.cursor.execute(sql)
+            sql = "INSERT INTO FCMToken(user, token) VALUES(%s, %s) ON DUPLICATE KEY UPDATE token = %s"
+            args = (user, token, token)
+            self.cursor.execute(sql, args)
             self.conn.commit()
         except :
             self.conn.rollback()
@@ -481,8 +491,9 @@ class DBHandler:
 
     def findFCMToken(self, user) :
         result = "empty"
-        sql = "SELECT token FROM FCMToken WHERE user = '%s'" % (user)
-        self.cursor.execute(sql)
+        sql = "SELECT token FROM FCMToken WHERE user = %s"
+        args = (user)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount > 0 :
             result = self.cursor.fetchone()
 
@@ -496,11 +507,13 @@ class DBHandler:
             return False
         else :
             try :
-                sql = "INSERT INTO roommap(code, GroupName, member, Type) VALUES('%s', '%s', '%s', 'C')" % (code, className, keeper)
-                self.cursor.execute(sql)
+                sql = "INSERT INTO roommap(code, GroupName, member, Type) VALUES(%s, %s, %s, 'C')"
+                args = (code, className, keeper)
+                self.cursor.execute(sql, args)
                 self.conn.commit()
-                sql = "INSERT INTO classkeeper(code, className, keeper) VALUES('%s', '%s', '%s')" % (code, className, keeper)
-                self.cursor.execute(sql)
+                sql = "INSERT INTO classkeeper(code, className, keeper) VALUES(%s, %s, %s)"
+                args = (code, className, keeper)
+                self.cursor.execute(sql, args)
                 self.conn.commit()
             except :
                 self.conn.rollback()
@@ -509,17 +522,20 @@ class DBHandler:
     def addToClass(self, className, keeper, student) :
         if not self.confirmAccount(student) :
             return False
-        sql = "SELECT code FROM classkeeper WHERE className = '%s' AND keeper = '%s'" % (className, keeper)
-        self.cursor.execute(sql)
+        sql = "SELECT code FROM classkeeper WHERE className = %s AND keeper = %s"
+        args = (className, keeper)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount > 0 :
             code = self.cursor.fetchone()[0]
-            sql = "SELECT null FROM roommap WHERE member = '%s'" % (student)
-            self.cursor.execute(sql)
+            sql = "SELECT null FROM roommap WHERE member = %s"
+            args = (student)
+            self.cursor.execute(sql, args)
             if self.cursor.rowcount > 0 :
                 return False
             try :
-                sql = "INSERT INTO roommap(code, GroupName, member, Type) VALUES('%s', '%s', '%s', 'C')" % (code, className, student)
-                self.cursor.execute(sql)
+                sql = "INSERT INTO roommap(code, GroupName, member, Type) VALUES(%s, %s, %s, 'C')"
+                args = (code, className, student)
+                self.cursor.execute(sql, args)
                 self.conn.commit()
             except :
                 self.conn.rollback()
@@ -528,8 +544,9 @@ class DBHandler:
             return False
 
     def getClassKeeper(self, code) :
-        sql = "SELECT keeper FROM classkeeper WHERE code = '%s'" % (code)
-        self.cursor.execute(sql)
+        sql = "SELECT keeper FROM classkeeper WHERE code = %s"
+        args = (code)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount > 0 :
             keeper = self.cursor.fetchone()[0]
             return keeper
@@ -539,14 +556,16 @@ class DBHandler:
     def storePoster(self, code, sender, theme, MSG, type_t) :
         self.re_connect()
         try :
-            sql = "INSERT INTO poster(code, sender, theme, MSG, type) VALUES('%s','%s','%s','%s','%s')" % (code, sender, theme, MSG, type_t)
-            self.cursor.execute(sql)
+            sql = "INSERT INTO poster(code, sender, theme, MSG, type) VALUES(%s,%s,%s,%s,%s)"
+            args = (code, sender, theme, MSG, type_t)
+            self.cursor.execute(sql, args)
             self.conn.commit()
         except :
             self.conn.rollback()
 
-        sql = "SELECT time FROM poster WHERE code = '%s' AND sender = '%s' AND theme = '%s 'AND MSG = '%s'" % (code,sender,theme,MSG)
-        self.cursor.execute(sql)
+        sql = "SELECT time FROM poster WHERE code = %s AND sender = %s AND theme = %s AND MSG = %s"
+        args = (code, sender, theme, MSG)
+        self.cursor.execute(sql, args)
         row = self.cursor.fetchone()
         return row[0]
 
@@ -554,8 +573,9 @@ class DBHandler:
     def fetchPost(self, code) :
         self.re_connect()
         record = list(())
-        sql = "SELECT sender, Theme, MSG, time FROM poster WHERE code = '%s' AND type = '%s'" % (code, "post")
-        self.cursor.execute(sql)
+        sql = "SELECT sender, Theme, MSG, time FROM poster WHERE code = %s AND type = %s"
+        args =(code, "post")
+        self.cursor.execute(sql, args)
 
         for i in range(0,self.cursor.rowcount) :
             row = self.cursor.fetchone()
@@ -566,8 +586,9 @@ class DBHandler:
     def fetchPostReply(self, code, theme) :
         self.re_connect()
         record = list()
-        sql = "SELECT sender, MSG, time FROM poster WHERE code = '%s' AND theme = '%s' AND type = '%s'" % (code, theme, "reply")
-        self.cursor.execute(sql)
+        sql = "SELECT sender, MSG, time FROM poster WHERE code = %s AND theme = %s AND type = %s"
+        args = (code, theme, "reply")
+        self.cursor.execute(sql, args)
 
         for i in range(0,self.cursor.rowcount) :
             row = self.cursor.fetchone()
@@ -578,8 +599,9 @@ class DBHandler:
     def deletePost(self, code, theme) :
         self.re_connect()
         try :
-            sql = "DELETE FROM poster WHERE code = '%s' AND Theme = '%s'" % (code, theme)
-            self.cursor.execute(sql)
+            sql = "DELETE FROM poster WHERE code = %s AND Theme = %s"
+            args = (code, theme)
+            self.cursor.execute(sql, args)
             self.conn.commit()
         except :
             self.conn.rollback()
@@ -587,8 +609,9 @@ class DBHandler:
     def deleteReply(self, sender, code, theme, content) :
         self.re_connect()
         try :
-            sql = "DELETE FROM poster WHERE sender = '%s' AND code = '%s' AND Theme = '%s' AND MSG = '%s'" % (sender, code, theme, content)
-            self.cursor.execute(sql)
+            sql = "DELETE FROM poster WHERE sender = %s AND code = %s AND Theme = %s AND MSG = %s"
+            args = (sender, code, theme, content)
+            self.cursor.execute(sql, args)
             self.conn.commit()
         except :
             self.conn.rollback()
@@ -597,8 +620,9 @@ class DBHandler:
     def deleteMessage(self, sender, code, time) :
         self.re_connect()
         try :
-            sql = "DELETE FROM record WHERE sender = '%s' AND code = '%s' AND time = '%s'" % (sender, code, time)
-            self.cursor.execute(sql)
+            sql = "DELETE FROM record WHERE sender = %s AND code = %s AND time = %s"
+            args = (sender, code, time)
+            self.cursor.execute(sql, args)
             self.conn.commit()
         except :
             self.conn.rollback()
@@ -606,8 +630,9 @@ class DBHandler:
     def changeUserName(self, user, newName) :
         self.re_connect()
         try :
-            sql = "UPDATE students SET Name = '%s' WHERE StudentID = '%s'" % (newName, user)
-            self.cursor.execute(sql)
+            sql = "UPDATE students SET Name = %s WHERE StudentID = %s"
+            args = (newName, user)
+            self.cursor.execute(sql, args)
             self.conn.commit()
         except :
             self.conn.rollback()
@@ -618,8 +643,9 @@ class DBHandler:
     def changeUserIntro(self, user, newIntro) :
         self.re_connect()
         try :
-            sql = "UPDATE students SET intro = '%s' WHERE StudentID = '%s'" % (newIntro, user)
-            self.cursor.execute(sql)
+            sql = "UPDATE students SET intro = %s WHERE StudentID = %s"
+            args = (newIntro, user)
+            self.cursor.execute(sql, args)
             self.conn.commit()
         except :
             self.conn.rollback()
@@ -630,8 +656,9 @@ class DBHandler:
     def changeUserPassword(self, user, newPassword) :
         self.re_connect()
         try :
-            sql = "UPDATE students SET password = '%s' WHERE StudentID = '%s'" % (newPassword, user)
-            self.cursor.execute(sql)
+            sql = "UPDATE students SET password = %s WHERE StudentID = %s"
+            args = (newPassword, user)
+            self.cursor.execute(sql, args)
             self.conn.commit()
         except :
             self.conn.rollback()
@@ -641,16 +668,18 @@ class DBHandler:
 
     def getUserIntro(self, user) :
         self.re_connect()
-        sql = "SELECT intro FROM students WHERE StudentID = '%s'" % (user)
-        self.cursor.execute(sql)
+        sql = "SELECT intro FROM students WHERE StudentID = %s"
+        args = (user)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount > 0 :
             intro = self.cursor.fetchone()[0]
             return intro
 
     def getPhoneNum(self, user) :
         self.re_connect()
-        sql = "SELECT PhoneNum FROM students WHERE StudentID = '%s'" % (user)
-        self.cursor.execute(sql)
+        sql = "SELECT PhoneNum FROM students WHERE StudentID = %s"
+        args = (user)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount > 0 :
             phoneNum = self.cursor.fetchone()[0]
             return phoneNum
@@ -665,15 +694,17 @@ class DBHandler:
                 if not vote_item :
                     return False
         try :
-            sql = "INSERT INTO annoc(announcer, code, text, due) VALUES('%s', '%s', '%s', '%s')" % (announcer, code, text, due)
-            self.cursor.execute(sql)
+            sql = "INSERT INTO annoc(announcer, code, text, due) VALUES(%s, %s, %s, %s)"
+            args = (announcer, code, text, due)
+            self.cursor.execute(sql, args)
             self.conn.commit()
             last_id = self.cursor.lastrowid
             if a_type == '2' :
                 if vote_type == 'AD' :
                     vote_item = "AD"
-                sql = "INSERT INTO vote_item(annoc_pk, items) VALUES('%s', '%s')" % (last_id, vote_item)
-                self.cursor.execute(sql)
+                sql = "INSERT INTO vote_item(annoc_pk, items) VALUES(%s, %s)"
+                args = (last_id, vote_item)
+                self.cursor.execute(sql, args)
                 self.conn.commit()
             result = True
         except :
@@ -683,21 +714,24 @@ class DBHandler:
 
     def getAnnoc(self, user) :
         annoc_list = list(())
-        sql = "SELECT code FROM roommap WHERE member = '%s' AND Type = 'C'" % (user)
-        self.cursor.execute(sql)
+        sql = "SELECT code FROM roommap WHERE member = %s AND Type = 'C'"
+        args = (user)
+        self.cursor.execute(sql, args)
         code_list = self.cursor.fetchall()
         if len(code_list) > 0:
             for code in code_list[0] :
-                sql = "SELECT PK, text FROM annoc WHERE code = '%s'" % (code)
-                self.cursor.execute(sql)
+                sql = "SELECT PK, text FROM annoc WHERE code = %s"
+                args = (code)
+                self.cursor.execute(sql, args)
                 for i in range(0, self.cursor.rowcount) :
                     row = self.cursor.fetchone()
                     pk_text = "\n".join([str(row[0]), row[1]])
                     annoc_list.append(pk_text)
                 for i in range(0, len(annoc_list)) :
                     annoc_pk = annoc_list[i].split('\n')[0]
-                    sql = "SELECT items FROM vote_item WHERE annoc_pk = '%s' AND items != 'AD'" % (annoc_pk)
-                    self.cursor.execute(sql)
+                    sql = "SELECT items FROM vote_item WHERE annoc_pk = %s AND items != 'AD'"
+                    args = (annoc_pk)
+                    self.cursor.execute(sql, args)
                     if self.cursor.rowcount > 0 :
                         annoc_list[i] = annoc_list[i] + ":::" + self.cursor.fetchone()[0]
         return annoc_list
@@ -709,8 +743,9 @@ class DBHandler:
 
     def setClearedInRecord(self, pk) :
         try :
-            sql = "UPDATE record SET cleared = 'Y' WHERE PK = '%s'" % (pk)
-            self.cursor.execute(sql)
+            sql = "UPDATE record SET cleared = 'Y' WHERE PK = %s"
+            args = (pk)
+            self.cursor.execute(sql, args)
             self.conn.commit()
         except :
             self.conn.rollback()
@@ -719,19 +754,22 @@ class DBHandler:
         try :
             time = datetime.now()
             time_str = datetime.strftime(time, '%Y-%m-%d %H:%M:%S')
-            sql = "DELETE FROM annoc WHERE due < '%s'" % (time_str)
-            self.cursor.execute(sql)
+            sql = "DELETE FROM annoc WHERE due < %s"
+            args = (time_str)
+            self.cursor.execute(sql, args)
             self.conn.commit()
         except :
             self.conn.rollback()
 
     def add_vote_result(self, pk, user, selected) :
-        sql = "SELECT null FROM vote_result WHERE annoc_pk = '%s' AND id = '%s'" % (pk, user)
-        self.cursor.execute(sql)
+        sql = "SELECT null FROM vote_result WHERE annoc_pk = %s AND id = %s"
+        args = (pk, user)
+        self.cursor.execute(sql, args)
         if self.cursor.rowcount == 0 :
             try :
-                sql = "INSERT INTO vote_result(annoc_pk, id, result) VALUES('%s', '%s', '%s')" % (pk, user, selected)
-                self.cursor.execute(sql)
+                sql = "INSERT INTO vote_result(annoc_pk, id, result) VALUES(%s, %s, %s)"
+                args = (pk, user, selected)
+                self.cursor.execute(sql, args)
                 self.conn.commit()
             except :
                 self.conn.rollback()

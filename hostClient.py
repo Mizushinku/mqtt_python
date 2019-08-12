@@ -611,8 +611,12 @@ def mkdir(path) :
 
 def getImageByPath(path) :
     with io.BytesIO() as bimg :
-        with Image.open(path) as img :
-            img.save(bimg, 'JPEG')
+        try :
+            with Image.open(path) as img :
+                img.save(bimg, 'JPEG')
+        except :
+            with Image.open('./image/default.png') as img :
+                img.save(bimg, 'PNG')
         image = bimg.getvalue()
     return image
 
