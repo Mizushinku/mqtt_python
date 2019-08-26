@@ -3,3 +3,5 @@ test.py
 __pycache__/
 image/
 userImage/
+.vscode/launch.json
+.vscode/settings.json
