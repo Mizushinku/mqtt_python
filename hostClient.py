@@ -557,12 +557,15 @@ def pubAnnoc(db, topic, user, msg) :
     code = msg.split("\t")[1]
     text = msg.split("\t")[2]
     due = msg.split("\t")[3]
-    vote_type = msg.split("\t")[4]
+    vote_type = None
     vote_item = None
+    if a_type == '2' :
+        vote_type = msg.split("\t")[4]
     if vote_type and vote_type == 'MC' :
         vote_item = msg.split('\t')[5]
     topic_re = "%s/Re" % (topic)
-    if db.addAnnoc(user, code, text, due, a_type, vote_type, vote_item) :
+    ret = db.addAnnoc(user, code, text, due, a_type, vote_type, vote_item)
+    if  ret :
         members = db.getReceiverList(code)
         className = db.getRoomName(code)
         for r in members :
@@ -571,7 +574,7 @@ def pubAnnoc(db, topic, user, msg) :
                 if token != "e" :
                     fcm.push_notify_annoc(token, className, text)
             else :
-                client.publish(topic_re, "OK", 2, False)
+                client.publish(topic_re, f'OK/{ret}', 2, False)
     else :
         client.publish(topic_re, "Fail", 2, False)
 

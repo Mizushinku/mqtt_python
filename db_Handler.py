@@ -706,7 +706,7 @@ class DBHandler:
                 args = (last_id, vote_item)
                 self.cursor.execute(sql, args)
                 self.conn.commit()
-            result = True
+            result = self.cursor.lastrowid
         except :
             self.conn.rollback()
 
